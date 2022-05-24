@@ -21,11 +21,13 @@ def initializeReport(report, projects, classExcludes) {
             switch (project) {
                 case { project.plugins.hasPlugin("com.android.application") }:
                     androidClassDirs.add("${project.buildDir}/tmp/kotlin-classes/gplayDebug")
+                    androidSourceDirs.add("${project.buildDir}/generated/source/kapt/gplayDebug")
                     androidSourceDirs.add("${project.projectDir}/src/main/kotlin")
                     androidSourceDirs.add("${project.projectDir}/src/main/java")
                     break
                 case { project.plugins.hasPlugin("com.android.library") }:
                     androidClassDirs.add("${project.buildDir}/tmp/kotlin-classes/debug")
+                    androidSourceDirs.add("${project.buildDir}/generated/source/kapt/debug")
                     androidSourceDirs.add("${project.projectDir}/src/main/kotlin")
                     androidSourceDirs.add("${project.projectDir}/src/main/java")
                     break
@@ -56,7 +58,12 @@ task theCodeCoverageReport(type: JacocoReport) {
     }
     def projects = collectProjects { ['vector','matrix-sdk-android'].contains(it.name) }
     //def projects = collectProjects { true }
-    dependsOn { [':vector:assembleGplay'] + [':matrix-sdk-android:testDebugUnitTest']  + [':vector:testGplayDebugUnitTest'] + [':matrix-sdk-android:connectedDebugAndroidTest'] }
+    dependsOn {
+//        [':vector:assembleGplay'] +
+        [':matrix-sdk-android:testDebugUnitTest'] +
+        [':vector:testGplayDebugUnitTest'] +
+        [':matrix-sdk-android:connectedDebugAndroidTest']
+    }
     initializeReport(it, projects, excludes)
 }
 
