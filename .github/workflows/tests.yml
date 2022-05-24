@@ -47,7 +47,7 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           emulator-build: 7425822
-          script: ./gradlew theCodeCoverageReport --stacktrace -i $CI_GRADLE_ARG_PROPERTIES
+          script: ./gradlew theCodeCoverageReport --stacktrace $CI_GRADLE_ARG_PROPERTIES
 
       - name: Upload Codecov data
         uses: actions/upload-artifact@v3
