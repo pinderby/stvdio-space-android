@@ -84,7 +84,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:taskAffinity="${applicationId}.${appTaskAffinitySuffix}"
-        android:theme="@style/Theme.Vector.Light"
+        android:theme="@style/Theme.Vector.Dark"
         tools:replace="android:allowBackup">
 
         <!-- No limit for screen ratio: avoid black strips -->
@@ -208,6 +208,7 @@
                 <data android:host="mobile.element.io" />
                 <data android:host="develop.element.io" />
                 <data android:host="staging.element.io" />
+                <data android:host="space.stvd.io" />
             </intent-filter>
         </activity>
 
