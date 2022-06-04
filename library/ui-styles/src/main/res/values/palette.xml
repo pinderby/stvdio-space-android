@@ -44,5 +44,6 @@
     <color name="palette_black_800">#15191E</color>
     <color name="palette_black_950">#21262C</color>
     <color name="palette_black">#000000</color>
+    <color name="palette_stvdio_purple">#8454eb</color>
 
 </resources>
