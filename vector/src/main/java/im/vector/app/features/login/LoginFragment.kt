@@ -18,6 +18,7 @@ package im.vector.app.features.login
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,6 +42,7 @@ import org.matrix.android.sdk.api.failure.Failure
 import org.matrix.android.sdk.api.failure.MatrixError
 import org.matrix.android.sdk.api.failure.isInvalidPassword
 import reactivecircus.flowbinding.android.widget.textChanges
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -176,12 +178,14 @@ class LoginFragment @Inject constructor() : AbstractSSOLoginFragment<FragmentLog
                 SignMode.SignInWithMatrixId -> R.string.login_connect_to
             }
 
+            Timber.d(state.serverType.toString())
             when (state.serverType) {
                 ServerType.MatrixOrg -> {
                     views.loginServerIcon.isVisible = true
                     views.loginServerIcon.setImageResource(R.drawable.ic_logo_matrix_org)
-                    views.loginTitle.text = getString(resId, state.homeServerUrlFromUser.toReducedUrl())
-                    views.loginNotice.text = getString(R.string.login_server_matrix_org_text)
+                    views.loginTitle.text = getString(resId, "STVDIO Space")
+//                    views.loginTitle.text = getString(resId, state.homeServerUrlFromUser.toReducedUrl())
+                    views.loginNotice.text = getString(R.string.login_stvdio_server_matrix_org_text)
                 }
                 ServerType.EMS       -> {
                     views.loginServerIcon.isVisible = true

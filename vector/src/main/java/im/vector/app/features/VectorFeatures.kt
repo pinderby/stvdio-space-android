@@ -40,7 +40,7 @@ class DefaultVectorFeatures : VectorFeatures {
     override fun onboardingVariant(): VectorFeatures.OnboardingVariant = BuildConfig.ONBOARDING_VARIANT
     override fun isOnboardingAlreadyHaveAccountSplashEnabled() = true
     override fun isOnboardingSplashCarouselEnabled() = true
-    override fun isOnboardingUseCaseEnabled() = true
+    override fun isOnboardingUseCaseEnabled() = false // --DTM-- Updated from true
     override fun isOnboardingPersonalizeEnabled() = false
     override fun isOnboardingCombinedRegisterEnabled() = false
     override fun isOnboardingCombinedLoginEnabled() = false

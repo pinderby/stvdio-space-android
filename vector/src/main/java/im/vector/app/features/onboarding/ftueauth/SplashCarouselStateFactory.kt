@@ -43,29 +43,29 @@ class SplashCarouselStateFactory @Inject constructor(
         fun hero(@DrawableRes lightDrawable: Int, @DrawableRes darkDrawable: Int) = if (lightTheme) lightDrawable else darkDrawable
         return SplashCarouselState(
                 listOf(
+//                        SplashCarouselState.Item(
+//                                R.string.ftue_auth_carousel_secure_title.colorTerminatingFullStop(R.attr.colorAccent),
+//                                R.string.ftue_auth_carousel_secure_body,
+//                                hero(R.drawable.ic_splash_conversations, R.drawable.ic_splash_conversations_dark),
+//                                background(R.drawable.bg_carousel_page_1)
+//                        ),
+//                        SplashCarouselState.Item(
+//                                R.string.ftue_auth_carousel_control_title.colorTerminatingFullStop(R.attr.colorAccent),
+//                                R.string.ftue_auth_carousel_control_body,
+//                                hero(R.drawable.ic_splash_control, R.drawable.ic_splash_control_dark),
+//                                background(R.drawable.bg_carousel_page_2)
+//                        ),
+//                        SplashCarouselState.Item(
+//                                R.string.ftue_auth_carousel_encrypted_title.colorTerminatingFullStop(R.attr.colorAccent),
+//                                R.string.ftue_auth_carousel_encrypted_body,
+//                                hero(R.drawable.ic_splash_secure, R.drawable.ic_splash_secure_dark),
+//                                background(R.drawable.bg_carousel_page_3)
+//                        ),
                         SplashCarouselState.Item(
-                                R.string.ftue_auth_carousel_secure_title.colorTerminatingFullStop(R.attr.colorAccent),
-                                R.string.ftue_auth_carousel_secure_body,
-                                hero(R.drawable.ic_splash_conversations, R.drawable.ic_splash_conversations_dark),
-                                background(R.drawable.bg_carousel_page_1)
-                        ),
-                        SplashCarouselState.Item(
-                                R.string.ftue_auth_carousel_control_title.colorTerminatingFullStop(R.attr.colorAccent),
-                                R.string.ftue_auth_carousel_control_body,
-                                hero(R.drawable.ic_splash_control, R.drawable.ic_splash_control_dark),
-                                background(R.drawable.bg_carousel_page_2)
-                        ),
-                        SplashCarouselState.Item(
-                                R.string.ftue_auth_carousel_encrypted_title.colorTerminatingFullStop(R.attr.colorAccent),
-                                R.string.ftue_auth_carousel_encrypted_body,
-                                hero(R.drawable.ic_splash_secure, R.drawable.ic_splash_secure_dark),
-                                background(R.drawable.bg_carousel_page_3)
-                        ),
-                        SplashCarouselState.Item(
-                                collaborationTitle().colorTerminatingFullStop(R.attr.colorAccent),
-                                R.string.ftue_auth_carousel_workplace_body,
-                                hero(R.drawable.ic_splash_collaboration, R.drawable.ic_splash_collaboration_dark),
-                                background(R.drawable.bg_carousel_page_4)
+                                collaborationTitle().colorTerminatingFullStop(R.attr.colorSurface),
+                                R.string.ftue_auth_carousel_welcome_to_stvdio_space,
+                                hero(R.drawable.ic_stvdio_logo_transparent, R.drawable.ic_stvdio_logo_transparent),
+                                background(R.drawable.bg_stvdio_dancer)
                         )
                 )
         )
@@ -73,7 +73,7 @@ class SplashCarouselStateFactory @Inject constructor(
 
     private fun collaborationTitle(): Int {
         return when {
-            localeProvider.isEnglishSpeaking() -> R.string.cut_the_slack_from_teams
+            localeProvider.isEnglishSpeaking() -> R.string.stvdio_space
             else                               -> R.string.ftue_auth_carousel_workplace_title
         }
     }

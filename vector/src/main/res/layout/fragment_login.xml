@@ -22,7 +22,8 @@
                 android:importantForAccessibility="no"
                 app:tint="?vctr_content_primary"
                 tools:ignore="MissingPrefix"
-                tools:src="@drawable/ic_logo_matrix_org" />
+                tools:src="@drawable/ic_logo_matrix_org"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/loginTitle"
@@ -41,7 +42,7 @@
                 android:layout_marginTop="@dimen/layout_vertical_margin"
                 android:gravity="start"
                 android:textColor="?vctr_content_secondary"
-                tools:text="@string/login_server_matrix_org_text" />
+                tools:text="@string/login_stvdio_server_matrix_org_text" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/loginFieldTil"

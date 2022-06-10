@@ -185,13 +185,14 @@ class OnboardingViewModel @AssistedInject constructor(
     private fun continueToPageAfterSplash(onboardingFlow: OnboardingFlow) {
         when (onboardingFlow) {
             OnboardingFlow.SignUp       -> {
-                _viewEvents.post(
-                        if (vectorFeatures.isOnboardingUseCaseEnabled()) {
-                            OnboardingViewEvents.OpenUseCaseSelection
-                        } else {
-                            OnboardingViewEvents.OpenServerSelection
-                        }
-                )
+                handle(OnboardingAction.HomeServerChange.SelectHomeServer(matrixOrgUrl))
+//                _viewEvents.post(
+//                        if (vectorFeatures.isOnboardingUseCaseEnabled()) {
+//                            OnboardingViewEvents.OpenUseCaseSelection
+//                        } else {
+//                            OnboardingViewEvents.OpenServerSelection
+//                        }
+//                )
             }
             OnboardingFlow.SignIn       -> when {
                 vectorFeatures.isOnboardingCombinedLoginEnabled() -> {
@@ -206,7 +207,8 @@ class OnboardingViewModel @AssistedInject constructor(
 
     private fun openServerSelectionOrDeeplinkToOther() {
         when (loginConfig) {
-            null -> _viewEvents.post(OnboardingViewEvents.OpenServerSelection)
+            null -> handle(OnboardingAction.HomeServerChange.SelectHomeServer(matrixOrgUrl))
+//            null -> _viewEvents.post(OnboardingViewEvents.OpenServerSelection)
             else -> handleHomeserverChange(OnboardingAction.HomeServerChange.SelectHomeServer(deeplinkOrDefaultHomeserverUrl()), ServerType.Other)
         }
     }

@@ -193,9 +193,12 @@ class FtueAuthLoginFragment @Inject constructor() : AbstractSSOFtueAuthFragment<
             when (state.serverType) {
                 ServerType.MatrixOrg -> {
                     views.loginServerIcon.isVisible = true
-                    views.loginServerIcon.setImageResource(R.drawable.ic_logo_matrix_org)
-                    views.loginTitle.text = getString(resId, state.selectedHomeserver.userFacingUrl.toReducedUrl())
-                    views.loginNotice.text = getString(R.string.login_server_matrix_org_text)
+                    // --DTM-- Updated
+                    views.loginTitle.text = getString(resId, "STVDIO Space")
+                    views.loginNotice.text = getString(R.string.login_stvdio_server_matrix_org_text)
+//                    views.loginServerIcon.setImageResource(R.drawable.ic_logo_matrix_org)
+//                    views.loginTitle.text = getString(resId, state.selectedHomeserver.userFacingUrl.toReducedUrl())
+//                    views.loginNotice.text = getString(R.string.login_server_matrix_org_text)
                 }
                 ServerType.EMS       -> {
                     views.loginServerIcon.isVisible = true

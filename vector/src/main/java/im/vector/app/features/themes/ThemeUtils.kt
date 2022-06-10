@@ -46,7 +46,7 @@ object ThemeUtils {
     private const val THEME_BLACK_VALUE = "black"
 
     // The default theme
-    private const val DEFAULT_THEME = SYSTEM_THEME_VALUE
+    private const val DEFAULT_THEME = THEME_DARK_VALUE
 
     private var currentTheme = AtomicReference<String>(null)
 

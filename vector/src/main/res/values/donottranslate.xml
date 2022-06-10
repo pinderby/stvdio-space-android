@@ -8,6 +8,7 @@
 
     <!-- onboarding english only word play -->
     <string name="cut_the_slack_from_teams" translatable="false">Cut the slack from teams.</string>
+    <string name="stvdio_space" translatable="false">STVDIO Space</string>
 
     <!--  WIP -->
     <string name="ftue_auth_create_account_title">Create your account</string>

@@ -1887,6 +1887,7 @@
     <!-- Note to translators: the translation MUST contain the string "${app_name}", which will be replaced by the application name -->
     <string name="ftue_auth_carousel_workplace_body">${app_name} is also great for the workplace. It’s trusted by the world’s most secure organisations.</string>
 
+
     <string name="ftue_auth_use_case_title">Who will you chat to the most?</string>
     <string name="ftue_auth_use_case_subtitle">We\'ll help you get connected.</string>
     <string name="ftue_auth_use_case_option_one">Friends and family</string>
@@ -1928,6 +1929,7 @@
     <string name="login_server_title">Select a server</string>
     <string name="login_server_text">Just like email, accounts have one home, although you can talk to anyone</string>
     <string name="login_server_matrix_org_text">Join millions for free on the largest public server</string>
+    <string name="login_stvdio_server_matrix_org_text">Join artists and fans on STVDIO Space!</string>
     <string name="login_server_modular_text">Premium hosting for organisations</string>
     <string name="login_server_modular_learn_more">Learn more</string>
     <string name="login_server_other_title">Other</string>
@@ -3060,4 +3062,5 @@
     <!-- Screen sharing -->
     <string name="screen_sharing_notification_title">${app_name} Screen Sharing</string>
     <string name="screen_sharing_notification_description">Screen sharing is in progress</string>
+    <string name="ftue_auth_carousel_welcome_to_stvdio_space">Welcome to STVDIO Space!</string>
 </resources>
