@@ -14,7 +14,8 @@
         <item name="android:src">@drawable/ic_stvdio_logo_transparent</item>
         <item name="android:transitionName">loginLogoTransition</item>
         <item name="android:importantForAccessibility">no</item>
-        <item name="android:scaleType">fitCenter</item>
+        <item name="android:scaleX">3</item>
+        <item name="android:scaleY">3</item>
     </style>
 
     <style name="LoginFormContainer">
