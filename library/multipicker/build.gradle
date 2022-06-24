@@ -19,6 +19,20 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('.\\signature\\debug.keystore')
+            storePassword 'android'
+            keyPassword 'android'
+            keyAlias 'androiddebugkey'
+        }
+        release {
+            storeFile file('C:\\David\\android-keystore.jks')
+            storePassword 'vcX3tKW9ra$^'
+            keyPassword 'vcX3tKW9ra$^'
+            keyAlias 'android'
+        }
+    }
     compileSdk versions.compileSdk
 
     defaultConfig {
