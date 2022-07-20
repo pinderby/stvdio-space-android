@@ -1,6 +1,7 @@
 import com.android.build.OutputFile
 
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
@@ -127,9 +128,24 @@ android {
 
     compileSdk versions.compileSdk
 
+    signingConfigs {
+        debug {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file('./signature/debug.keystore')
+            storePassword 'android'
+        }
+        release {
+            keyAlias 'android'
+            keyPassword 'vcX3tKW9ra$^'
+            storePassword 'vcX3tKW9ra$^'
+            storeFile file('C:\\David\\android-keystore.jks')
+        }
+    }
+
     defaultConfig {
-//        applicationId "io.stvd.space" // --DTM-- Updated
-        applicationId "im.vector.app"
+        applicationId "io.stvd.space" // --DTM-- Updated
+//        applicationId "im.vector.app"
         // Set to API 21: see #405
         minSdk versions.minSdk
         targetSdk versions.targetSdk
@@ -193,6 +209,7 @@ android {
                 universalApk true
             }
         }
+        signingConfig signingConfigs.release
 
         applicationVariants.all { variant ->
             // assign different version code for each output
@@ -219,20 +236,6 @@ android {
 
         // Comment to run on Android 12
 //        execution 'ANDROIDX_TEST_ORCHESTRATOR'
-    }
-    signingConfigs {
-        debug {
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-            storeFile file('./signature/debug.keystore')
-            storePassword 'android'
-        }
-        release {
-            keyAlias 'android'
-            keyPassword 'vcX3tKW9ra$^'
-            storePassword 'vcX3tKW9ra$^'
-            storeFile file('C:\\David\\android-keystore.jks')
-        }
     }
 
     buildTypes {
@@ -261,7 +264,7 @@ android {
                 optimizeCode true
                 proguardFiles 'proguard-rules.pro'
             }
-            // signingConfig signingConfigs.release
+             signingConfig signingConfigs.release
         }
     }
 
@@ -338,6 +341,9 @@ android {
 
 dependencies {
     implementation project(":vector-config")
+    // Import the Firebase BoM
+    implementation platform('com.google.firebase:firebase-bom:30.2.0')
+    implementation 'com.google.firebase:firebase-analytics'
     implementation project(":matrix-sdk-android")
     implementation project(":matrix-sdk-android-flow")
     implementation project(":library:jsonviewer")
