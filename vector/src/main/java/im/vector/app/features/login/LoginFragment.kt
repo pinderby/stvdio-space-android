@@ -186,6 +186,7 @@ class LoginFragment @Inject constructor() : AbstractSSOLoginFragment<FragmentLog
                     views.loginTitle.text = getString(resId, "STVDIO Space")
 //                    views.loginTitle.text = getString(resId, state.homeServerUrlFromUser.toReducedUrl())
                     views.loginNotice.text = getString(R.string.login_stvdio_server_matrix_org_text)
+//                    views.termsAndConditionsNotice.text = getString(R.string.login_stvdio_terms_and_conditions_text)
                 }
                 ServerType.EMS       -> {
                     views.loginServerIcon.isVisible = true

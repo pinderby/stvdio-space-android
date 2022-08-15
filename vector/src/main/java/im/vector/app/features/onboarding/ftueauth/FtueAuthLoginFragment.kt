@@ -18,12 +18,15 @@ package im.vector.app.features.onboarding.ftueauth
 
 import android.os.Build
 import android.os.Bundle
+import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.autofill.HintConstants
 import androidx.core.text.isDigitsOnly
+import androidx.core.text.toSpannable
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.airbnb.mvrx.withState
@@ -52,6 +55,7 @@ import org.matrix.android.sdk.api.failure.isRegistrationDisabled
 import org.matrix.android.sdk.api.failure.isUsernameInUse
 import org.matrix.android.sdk.api.failure.isWeakPassword
 import reactivecircus.flowbinding.android.widget.textChanges
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -87,6 +91,7 @@ class FtueAuthLoginFragment @Inject constructor() : AbstractSSOFtueAuthFragment<
             }
             return@setOnEditorActionListener false
         }
+
     }
 
     private fun setupForgottenPasswordButton() {
@@ -196,6 +201,16 @@ class FtueAuthLoginFragment @Inject constructor() : AbstractSSOFtueAuthFragment<
                     // --DTM-- Updated
                     views.loginTitle.text = getString(resId, "STVDIO Space")
                     views.loginNotice.text = getString(R.string.login_stvdio_server_matrix_org_text)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        views.termsAndConditionsNotice.text = Html.fromHtml(
+                                "By using STVDIO Space you agree to the <a href=\"https://stvd.io/terms-and-conditions/\">STVDIO Space Terms and Conditions</a>."
+                                , Html.FROM_HTML_MODE_LEGACY)
+                        views.termsAndConditionsNotice.movementMethod = LinkMovementMethod.getInstance()
+                    } else {
+                        val termsAndConditionsText = "By using STVDIO Space you agree to the <a href=\"https://stvd.io/terms-and-conditions/\">STVDIO Space Terms and Conditions</a>."
+                        views.termsAndConditionsNotice.text = termsAndConditionsText
+                        views.termsAndConditionsNotice.movementMethod = LinkMovementMethod.getInstance()
+                    }
 //                    views.loginServerIcon.setImageResource(R.drawable.ic_logo_matrix_org)
 //                    views.loginTitle.text = getString(resId, state.selectedHomeserver.userFacingUrl.toReducedUrl())
 //                    views.loginNotice.text = getString(R.string.login_server_matrix_org_text)
@@ -314,6 +329,7 @@ class FtueAuthLoginFragment @Inject constructor() : AbstractSSOFtueAuthFragment<
             // Ensure password is hidden
             views.passwordField.hidePassword()
         }
+
     }
 
     /**
