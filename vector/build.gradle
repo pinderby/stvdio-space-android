@@ -32,7 +32,7 @@ ext.versionMinor = 4
 // Note: even values are reserved for regular release, odd values for hotfix release.
 // When creating a hotfix, you should decrease the value, since the current value
 // is the value for the next regular release.
-ext.versionPatch = 21
+ext.versionPatch = 22
 
 static def getGitTimestamp() {
     def cmd = 'git show -s --format=%ct'
@@ -264,7 +264,12 @@ android {
                 optimizeCode true
                 proguardFiles 'proguard-rules.pro'
             }
-             signingConfig signingConfigs.release
+
+            ndk {
+                debugSymbolLevel 'SYMBOL_TABLE'
+            }
+
+            signingConfig signingConfigs.release
         }
     }
 
