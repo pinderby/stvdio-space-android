@@ -856,8 +856,9 @@ class TimelineViewModel @AssistedInject constructor(
             tryOrNull { Uri.parse(mxcUrl) }?.let {
                 _viewEvents.post(
                         RoomDetailViewEvents.OpenFile(
+                                action.messageFileContent.mimeType,
                                 it,
-                                action.messageFileContent.mimeType
+                                null
                         )
                 )
             }
@@ -886,8 +887,9 @@ class TimelineViewModel @AssistedInject constructor(
                     session.fileService().getTemporarySharableURI(action.messageFileContent)?.let { uri ->
                         _viewEvents.post(
                                 RoomDetailViewEvents.OpenFile(
+                                        action.messageFileContent.mimeType,
                                         uri,
-                                        action.messageFileContent.mimeType
+                                        null
                                 )
                         )
                     }

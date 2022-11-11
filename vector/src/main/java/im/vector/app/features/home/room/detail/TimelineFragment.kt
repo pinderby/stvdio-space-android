@@ -119,7 +119,6 @@ import im.vector.app.core.utils.safeStartActivity
 import im.vector.app.core.utils.saveMedia
 import im.vector.app.core.utils.shareMedia
 import im.vector.app.core.utils.shareText
-import im.vector.app.core.utils.startInstallFromSourceIntent
 import im.vector.app.core.utils.toast
 import im.vector.app.databinding.DialogReportContentBinding
 import im.vector.app.databinding.FragmentTimelineBinding
@@ -242,7 +241,6 @@ import org.matrix.android.sdk.api.session.room.timeline.getLastMessageContent
 import org.matrix.android.sdk.api.session.widgets.model.Widget
 import org.matrix.android.sdk.api.session.widgets.model.WidgetType
 import org.matrix.android.sdk.api.util.MatrixItem
-import org.matrix.android.sdk.api.util.MimeTypes
 import org.matrix.android.sdk.api.util.toMatrixItem
 import reactivecircus.flowbinding.android.view.focusChanges
 import reactivecircus.flowbinding.android.widget.textChanges
@@ -870,47 +868,18 @@ class TimelineFragment @Inject constructor(
     }
 
     private fun startOpenFileIntent(action: RoomDetailViewEvents.OpenFile) {
-        if (action.mimeType == MimeTypes.Apk) {
-            installApk(action)
-        } else {
-            openFile(action)
-        }
-    }
+        if (action.uri != null) {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndTypeAndNormalize(action.uri, action.mimeType)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
 
-    private fun openFile(action: RoomDetailViewEvents.OpenFile) {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndTypeAndNormalize(action.uri, action.mimeType)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-
-        requireActivity().safeStartActivity(intent)
-    }
-
-    private fun installApk(action: RoomDetailViewEvents.OpenFile) {
-        val safeContext = context ?: return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (!safeContext.packageManager.canRequestPackageInstalls()) {
-                timelineViewModel.pendingEvent = action
-                startInstallFromSourceIntent(safeContext, installApkActivityResultLauncher)
+            if (intent.resolveActivity(requireActivity().packageManager) != null) {
+                requireActivity().startActivity(intent)
             } else {
-                openFile(action)
+                requireActivity().toast(R.string.error_no_external_application_found)
             }
-        } else {
-            openFile(action)
         }
-    }
-
-    private val installApkActivityResultLauncher = registerStartForActivityResult { activityResult ->
-        if (activityResult.resultCode == Activity.RESULT_OK) {
-            timelineViewModel.pendingEvent?.let {
-                if (it is RoomDetailViewEvents.OpenFile) {
-                    openFile(it)
-                }
-            }
-        } else {
-            // User cancelled
-        }
-        timelineViewModel.pendingEvent = null
     }
 
     private fun displayPromptForIntegrationManager() {
