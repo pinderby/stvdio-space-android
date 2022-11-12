@@ -45,12 +45,14 @@ class KeysExporter @Inject constructor(
     private fun verifyExportedKeysOutputFileSize(uri: Uri, expectedSize: Long) {
         val output = context.contentResolver.openFileDescriptor(uri, "r", null)
         when {
-            output == null                  -> throw IllegalStateException("Exported file not found")
+            output == null -> throw IllegalStateException("Exported file not found")
             output.statSize != expectedSize -> {
-                throw UnexpectedExportKeysFileSizeException(
+                val exception = UnexpectedExportKeysFileSizeException(
                         expectedFileSize = expectedSize,
                         actualFileSize = output.statSize
                 )
+                output.close()
+                throw exception
             }
         }
     }

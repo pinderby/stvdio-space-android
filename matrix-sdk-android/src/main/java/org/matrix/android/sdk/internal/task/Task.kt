@@ -16,6 +16,7 @@
 
 package org.matrix.android.sdk.internal.task
 
+import android.util.Log
 import kotlinx.coroutines.delay
 import org.matrix.android.sdk.api.failure.Failure
 import org.matrix.android.sdk.api.failure.shouldBeRetried
@@ -27,7 +28,9 @@ internal interface Task<PARAMS, RESULT> {
 
     suspend fun executeRetry(params: PARAMS, remainingRetry: Int): RESULT {
         return try {
-            execute(params)
+            var item = execute(params)
+            Log.i("dskfjksdjfk", item.toString())
+            item
         } catch (failure: Throwable) {
             if (failure.shouldBeRetried() && remainingRetry > 0) {
                 Timber.d(failure, "## TASK: Retriable error")

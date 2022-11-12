@@ -27,6 +27,7 @@ import im.vector.app.core.platform.VectorBaseActivity
 import im.vector.app.databinding.ActivitySimpleBinding
 import im.vector.app.features.spaces.preview.SpacePreviewArgs
 import im.vector.app.features.spaces.preview.SpacePreviewFragment
+import im.vector.lib.core.utils.compat.getParcelableExtraCompat
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -44,16 +45,16 @@ class SpacePreviewActivity : VectorBaseActivity<ActivitySimpleBinding>() {
                 .stream()
                 .onEach { action ->
                     when (action) {
-                        SpacePreviewSharedAction.DismissAction       -> finish()
-                        SpacePreviewSharedAction.ShowModalLoading    -> showWaitingView()
-                        SpacePreviewSharedAction.HideModalLoading    -> hideWaitingView()
+                        SpacePreviewSharedAction.DismissAction -> finish()
+                        SpacePreviewSharedAction.ShowModalLoading -> showWaitingView()
+                        SpacePreviewSharedAction.HideModalLoading -> hideWaitingView()
                         is SpacePreviewSharedAction.ShowErrorMessage -> action.error?.let { showSnackbar(it) }
                     }
                 }
                 .launchIn(lifecycleScope)
 
         if (isFirstCreation()) {
-            val args = intent?.getParcelableExtra<SpacePreviewArgs>(Mavericks.KEY_ARG)
+            val args = intent?.getParcelableExtraCompat<SpacePreviewArgs>(Mavericks.KEY_ARG)
             replaceFragment(
                     views.simpleFragmentContainer,
                     SpacePreviewFragment::class.java,

@@ -55,61 +55,61 @@
             android:id="@+id/titleContentSpacing"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/chooseYourServerHeader"
+            app:layout_constraintBottom_toTopOf="@id/serverSelectionSpacing"
             app:layout_constraintHeight_percent="0.03"
             app:layout_constraintTop_toBottomOf="@id/loginHeaderTitle" />
 
-        <TextView
-            android:id="@+id/chooseYourServerHeader"
-            style="@style/Widget.Vector.TextView.Caption"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="4dp"
-            android:text="@string/ftue_auth_create_account_choose_server_header"
-            android:textColor="?vctr_content_secondary"
-            app:layout_constraintBottom_toTopOf="@id/selectedServerName"
-            app:layout_constraintEnd_toStartOf="@id/editServerButton"
-            app:layout_constraintStart_toStartOf="@id/loginGutterStart"
-            app:layout_constraintTop_toBottomOf="@id/titleContentSpacing" />
+<!--        <TextView-->
+<!--            android:id="@+id/chooseYourServerHeader"-->
+<!--            style="@style/Widget.Vector.TextView.Caption"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="12dp"-->
+<!--            android:layout_marginTop="4dp"-->
+<!--            android:text="@string/ftue_auth_sign_in_choose_server_header"-->
+<!--            android:textColor="?vctr_content_secondary"-->
+<!--            app:layout_constraintBottom_toTopOf="@id/selectedServerName"-->
+<!--            app:layout_constraintEnd_toStartOf="@id/editServerButton"-->
+<!--            app:layout_constraintStart_toStartOf="@id/loginGutterStart"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/titleContentSpacing" />-->
 
-        <TextView
-            android:id="@+id/selectedServerName"
-            style="@style/Widget.Vector.TextView.Subtitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:textColor="?vctr_content_primary"
-            app:layout_constraintBottom_toTopOf="@id/selectedServerDescription"
-            app:layout_constraintEnd_toStartOf="@id/editServerButton"
-            app:layout_constraintStart_toStartOf="@id/loginGutterStart"
-            app:layout_constraintTop_toBottomOf="@id/chooseYourServerHeader" />
+<!--        <TextView-->
+<!--            android:id="@+id/selectedServerName"-->
+<!--            style="@style/Widget.Vector.TextView.Subtitle"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="12dp"-->
+<!--            android:textColor="?vctr_content_primary"-->
+<!--            app:layout_constraintBottom_toTopOf="@id/selectedServerDescription"-->
+<!--            app:layout_constraintEnd_toStartOf="@id/editServerButton"-->
+<!--            app:layout_constraintStart_toStartOf="@id/loginGutterStart"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/chooseYourServerHeader" />-->
 
-        <TextView
-            android:id="@+id/selectedServerDescription"
-            style="@style/Widget.Vector.TextView.Micro"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:textColor="?vctr_content_tertiary"
-            app:layout_constraintBottom_toTopOf="@id/serverSelectionSpacing"
-            app:layout_constraintEnd_toStartOf="@id/editServerButton"
-            app:layout_constraintStart_toStartOf="@id/loginGutterStart"
-            app:layout_constraintTop_toBottomOf="@id/selectedServerName" />
+<!--        <TextView-->
+<!--            android:id="@+id/selectedServerDescription"-->
+<!--            style="@style/Widget.Vector.TextView.Micro"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="12dp"-->
+<!--            android:textColor="?vctr_content_tertiary"-->
+<!--            app:layout_constraintBottom_toTopOf="@id/serverSelectionSpacing"-->
+<!--            app:layout_constraintEnd_toStartOf="@id/editServerButton"-->
+<!--            app:layout_constraintStart_toStartOf="@id/loginGutterStart"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/selectedServerName" />-->
 
-        <Button
-            android:id="@+id/editServerButton"
-            style="@style/Widget.Vector.Button.Outlined"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="0dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:text="@string/ftue_auth_create_account_edit_server_selection"
-            android:textAllCaps="true"
-            app:layout_constraintBottom_toBottomOf="@id/selectedServerDescription"
-            app:layout_constraintEnd_toEndOf="@id/loginGutterEnd"
-            app:layout_constraintTop_toTopOf="@id/chooseYourServerHeader" />
+<!--        <Button-->
+<!--            android:id="@+id/editServerButton"-->
+<!--            style="@style/Widget.Vector.Button.Outlined"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:minWidth="0dp"-->
+<!--            android:paddingStart="12dp"-->
+<!--            android:paddingEnd="12dp"-->
+<!--            android:text="@string/ftue_auth_create_account_edit_server_selection"-->
+<!--            android:textAllCaps="true"-->
+<!--            app:layout_constraintBottom_toBottomOf="@id/selectedServerDescription"-->
+<!--            app:layout_constraintEnd_toEndOf="@id/loginGutterEnd"-->
+<!--            app:layout_constraintTop_toTopOf="@id/chooseYourServerHeader" />-->
 
         <Space
             android:id="@+id/serverSelectionSpacing"
@@ -117,7 +117,7 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@id/loginInput"
             app:layout_constraintHeight_percent="0.05"
-            app:layout_constraintTop_toBottomOf="@id/selectedServerDescription" />
+            app:layout_constraintTop_toBottomOf="@id/titleContentSpacing" />
 
         <View
             android:layout_width="0dp"
@@ -140,17 +140,18 @@
             style="@style/Widget.Vector.TextInputLayout.Username"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="@string/username"
+            android:hint="@string/ftue_auth_login_username_entry"
             app:layout_constraintBottom_toTopOf="@id/entrySpacing"
             app:layout_constraintEnd_toEndOf="@id/loginGutterEnd"
             app:layout_constraintStart_toStartOf="@id/loginGutterStart"
             app:layout_constraintTop_toBottomOf="@id/serverSelectionSpacing">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/loginEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:imeOptions="actionNext"
-                android:inputType="text"
+                android:inputType="textNoSuggestions"
                 android:maxLines="1"
                 android:nextFocusForward="@id/loginPasswordInput" />
 
@@ -170,12 +171,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/login_signup_password_hint"
-            app:layout_constraintBottom_toTopOf="@id/actionSpacing"
+            app:layout_constraintBottom_toTopOf="@id/loginForgotPassword"
             app:layout_constraintEnd_toEndOf="@id/loginGutterEnd"
             app:layout_constraintStart_toStartOf="@id/loginGutterStart"
             app:layout_constraintTop_toBottomOf="@id/entrySpacing">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/loginPasswordEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:imeOptions="actionDone"
@@ -184,13 +186,43 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <TextView
+            android:id="@+id/loginPasswordNotice"
+            style="@style/Widget.Vector.TextView.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:text="@string/text_privacy"
+            android:textColor="?vctr_content_secondary"
+            android:padding="9dp"
+            tools:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@id/actionSpacing"
+            app:layout_constraintEnd_toStartOf="@id/loginGutterEnd"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintStart_toStartOf="@id/loginGutterStart"
+            app:layout_constraintTop_toBottomOf="@id/loginForgotPassword" />
+
+        <Button
+            android:id="@+id/loginForgotPassword"
+            style="@style/Widget.Vector.Button.Text.Login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ftue_auth_forgot_password"
+            android:textAllCaps="true"
+            android:textColor="?colorSecondary"
+            app:layout_constraintBottom_toTopOf="@id/loginPasswordNotice"
+            app:layout_constraintEnd_toEndOf="@id/loginGutterEnd"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintStart_toStartOf="@id/loginGutterStart"
+            app:layout_constraintTop_toBottomOf="@id/loginPasswordInput" />
+
         <Space
             android:id="@+id/actionSpacing"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@id/loginSubmit"
             app:layout_constraintHeight_percent="0.02"
-            app:layout_constraintTop_toBottomOf="@id/loginPasswordInput" />
+            app:layout_constraintTop_toBottomOf="@id/loginPasswordNotice" />
 
         <Button
             android:id="@+id/loginSubmit"
@@ -228,6 +260,20 @@
             app:layout_constraintStart_toStartOf="@id/loginGutterStart"
             app:layout_constraintTop_toBottomOf="@id/loginSubmit" />
 
+        <Button
+            android:id="@+id/loginWithQrCode"
+            style="@style/Widget.Vector.Button.Outlined.Login"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="12dp"
+            android:text="@string/login_scan_qr_code"
+            android:visibility="gone"
+            app:drawableLeftCompat="@drawable/ic_qr_code"
+            app:layout_constraintEnd_toEndOf="@id/loginGutterEnd"
+            app:layout_constraintStart_toStartOf="@id/loginGutterStart"
+            app:layout_constraintTop_toBottomOf="@id/ssoButtonsHeader"
+            tools:visibility="visible" />
+
         <im.vector.app.features.login.SocialLoginButtonsView
             android:id="@+id/ssoButtons"
             android:layout_width="0dp"
@@ -236,7 +282,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/loginGutterEnd"
             app:layout_constraintStart_toStartOf="@id/loginGutterStart"
-            app:layout_constraintTop_toBottomOf="@id/ssoButtonsHeader"
+            app:layout_constraintTop_toBottomOf="@id/loginWithQrCode"
             tools:signMode="signup" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

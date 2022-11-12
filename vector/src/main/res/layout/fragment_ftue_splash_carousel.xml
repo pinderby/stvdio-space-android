@@ -18,19 +18,19 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.65" />
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/carouselIndicator"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        app:layout_constraintBottom_toTopOf="@id/loginSplashButtonsSpace"
-        app:layout_constraintTop_toBottomOf="@id/splashCarouselFloatingSection"
-        app:layout_constraintVertical_chainStyle="spread"
-        app:tabBackground="@drawable/indicator_onboarding_carousel_selector"
-        app:tabGravity="center"
-        app:tabIndicatorHeight="0dp"
-        app:tabPaddingEnd="8dp"
-        app:tabPaddingStart="8dp" />
+<!--    <com.google.android.material.tabs.TabLayout-->
+<!--        android:id="@+id/carouselIndicator"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@null"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/loginSplashButtonsSpace"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/splashCarouselFloatingSection"-->
+<!--        app:layout_constraintVertical_chainStyle="spread"-->
+<!--        app:tabBackground="@drawable/indicator_onboarding_carousel_selector"-->
+<!--        app:tabGravity="center"-->
+<!--        app:tabIndicatorHeight="0dp"-->
+<!--        app:tabPaddingEnd="8dp"-->
+<!--        app:tabPaddingStart="8dp" />-->
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/splashCarouselGutterStart"
@@ -54,7 +54,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.01"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/carouselIndicator" />
+        app:layout_constraintTop_toBottomOf="@id/splashCarouselFloatingSection" />
 
     <Button
         android:id="@+id/loginSplashSubmit"

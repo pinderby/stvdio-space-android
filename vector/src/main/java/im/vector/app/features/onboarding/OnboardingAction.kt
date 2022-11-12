@@ -47,11 +47,18 @@ sealed interface OnboardingAction : VectorViewModelAction {
     data class LoginWithToken(val loginToken: String) : OnboardingAction
     data class WebLoginSuccess(val credentials: Credentials) : OnboardingAction
     data class InitWith(val loginConfig: LoginConfig?) : OnboardingAction
-    data class ResetPassword(val email: String, val newPassword: String) : OnboardingAction
+    data class ResetPassword(val email: String, val newPassword: String?) : OnboardingAction
+    data class ConfirmNewPassword(val newPassword: String, val signOutAllDevices: Boolean) : OnboardingAction
+    object ResendResetPassword : OnboardingAction
     object ResetPasswordMailConfirmed : OnboardingAction
 
+    sealed interface UserNameEnteredAction : OnboardingAction {
+        data class Registration(val userId: String) : UserNameEnteredAction
+        data class Login(val userId: String) : UserNameEnteredAction
+    }
     sealed interface AuthenticateAction : OnboardingAction {
         data class Register(val username: String, val password: String, val initialDeviceName: String) : AuthenticateAction
+        data class RegisterWithMatrixId(val matrixId: String, val password: String, val initialDeviceName: String) : AuthenticateAction
         data class Login(val username: String, val password: String, val initialDeviceName: String) : AuthenticateAction
         data class LoginDirect(val matrixId: String, val password: String, val initialDeviceName: String) : AuthenticateAction
     }
@@ -68,13 +75,14 @@ sealed interface OnboardingAction : VectorViewModelAction {
     object ResetSignMode : ResetAction
     object ResetAuthenticationAttempt : ResetAction
     object ResetResetPassword : ResetAction
+    object ResetSelectedRegistrationUserName : ResetAction
 
     // Homeserver history
     object ClearHomeServerHistory : OnboardingAction
 
     data class PostViewEvent(val viewEvent: OnboardingViewEvents) : OnboardingAction
 
-    data class UserAcceptCertificate(val fingerprint: Fingerprint) : OnboardingAction
+    data class UserAcceptCertificate(val fingerprint: Fingerprint, val retryAction: OnboardingAction) : OnboardingAction
 
     object PersonalizeProfile : OnboardingAction
     data class UpdateDisplayName(val displayName: String) : OnboardingAction

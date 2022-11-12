@@ -21,20 +21,8 @@ plugins {
 
 android {
 
-    signingConfigs {
-        debug {
-            storeFile file('.\\signature\\debug.keystore')
-            storePassword 'android'
-            keyPassword 'android'
-            keyAlias 'androiddebugkey'
-        }
-        release {
-            storeFile file('C:\\David\\android-keystore.jks')
-            storePassword 'vcX3tKW9ra$^'
-            keyPassword 'vcX3tKW9ra$^'
-            keyAlias 'android'
-        }
-    }
+    namespace "im.vector.lib.ui.styles"
+
     compileSdk versions.compileSdk
     defaultConfig {
         minSdk versions.minSdk
@@ -67,11 +55,10 @@ android {
 
 dependencies {
     implementation libs.androidx.appCompat
+    implementation libs.androidx.fragmentKtx
     implementation libs.google.material
     // Pref theme
     implementation libs.androidx.preferenceKtx
-    // PFLockScreen attrs
-    implementation 'com.github.vector-im:PFLockScreen-Android:1.0.0-beta12'
     // dialpad dimen
-    implementation 'im.dlg:android-dialer:1.2.5'
+    implementation project(":library:external:dialpad")
 }

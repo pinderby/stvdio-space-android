@@ -31,6 +31,7 @@ import android.webkit.SslErrorHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import im.vector.app.R
 import im.vector.app.core.utils.AssetReader
 import im.vector.app.databinding.FragmentLoginWebBinding
@@ -49,9 +50,11 @@ import javax.inject.Inject
  * This screen is displayed when the application does not support login flow or registration flow
  * of the homeserver, as a fallback to login or to create an account.
  */
-class FtueAuthWebFragment @Inject constructor(
-        private val assetReader: AssetReader
-) : AbstractFtueAuthFragment<FragmentLoginWebBinding>() {
+@AndroidEntryPoint
+class FtueAuthWebFragment :
+        AbstractFtueAuthFragment<FragmentLoginWebBinding>() {
+
+    @Inject lateinit var assetReader: AssetReader
 
     override fun getBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentLoginWebBinding {
         return FragmentLoginWebBinding.inflate(inflater, container, false)
@@ -78,7 +81,7 @@ class FtueAuthWebFragment @Inject constructor(
     private fun setupTitle(state: OnboardingViewState) {
         toolbar?.title = when (state.signMode) {
             SignMode.SignIn -> getString(R.string.login_signin)
-            else            -> getString(R.string.login_signup)
+            else -> getString(R.string.login_signup)
         }
     }
 
@@ -245,9 +248,9 @@ class FtueAuthWebFragment @Inject constructor(
 
     override fun onBackPressed(toolbarButton: Boolean): Boolean {
         return when {
-            toolbarButton                     -> super.onBackPressed(toolbarButton)
+            toolbarButton -> super.onBackPressed(toolbarButton)
             views.loginWebWebView.canGoBack() -> views.loginWebWebView.goBack().run { true }
-            else                              -> super.onBackPressed(toolbarButton)
+            else -> super.onBackPressed(toolbarButton)
         }
     }
 }

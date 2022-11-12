@@ -18,6 +18,7 @@ package im.vector.app.features.home.room.detail.timeline.style
 
 import android.content.res.Resources
 import im.vector.app.R
+import im.vector.app.core.extensions.getVectorLastMessageContent
 import im.vector.app.core.extensions.localDateTime
 import im.vector.app.core.resources.LocaleProvider
 import im.vector.app.core.resources.isRTL
@@ -29,7 +30,6 @@ import org.matrix.android.sdk.api.session.room.model.message.MessageContent
 import org.matrix.android.sdk.api.session.room.model.message.MessageType
 import org.matrix.android.sdk.api.session.room.model.message.MessageVerificationRequestContent
 import org.matrix.android.sdk.api.session.room.timeline.TimelineEvent
-import org.matrix.android.sdk.api.session.room.timeline.getLastMessageContent
 import org.matrix.android.sdk.api.session.room.timeline.isEdition
 import org.matrix.android.sdk.api.session.room.timeline.isRootThread
 import javax.inject.Inject
@@ -62,16 +62,16 @@ class TimelineMessageLayoutFactory @Inject constructor(
                 MessageType.MSGTYPE_STICKER_LOCAL,
                 MessageType.MSGTYPE_EMOTE,
                 MessageType.MSGTYPE_BEACON_INFO,
+                MessageType.MSGTYPE_LOCATION,
+                MessageType.MSGTYPE_BEACON_LOCATION_DATA,
         )
         private val MSG_TYPES_WITH_TIMESTAMP_INSIDE_MESSAGE = setOf(
                 MessageType.MSGTYPE_IMAGE,
                 MessageType.MSGTYPE_VIDEO,
+                MessageType.MSGTYPE_STICKER_LOCAL,
                 MessageType.MSGTYPE_BEACON_INFO,
-        )
-
-        private val MSG_TYPES_WITH_LOCATION_DATA = setOf(
                 MessageType.MSGTYPE_LOCATION,
-                MessageType.MSGTYPE_BEACON_LOCATION_DATA
+                MessageType.MSGTYPE_BEACON_LOCATION_DATA,
         )
     }
 
@@ -126,7 +126,7 @@ class TimelineMessageLayoutFactory @Inject constructor(
                             isLastFromThisSender = isLastFromThisSender
                     )
 
-                    val messageContent = event.getLastMessageContent()
+                    val messageContent = event.getVectorLastMessageContent()
                     TimelineMessageLayout.Bubble(
                             showAvatar = showInformation && !isSentByMe,
                             showDisplayName = showInformation && !isSentByMe,
@@ -147,30 +147,27 @@ class TimelineMessageLayoutFactory @Inject constructor(
 
     private fun MessageContent?.isPseudoBubble(): Boolean {
         if (this == null) return false
-        if (msgType == MessageType.MSGTYPE_LOCATION) return vectorPreferences.labsRenderLocationsInTimeline()
         return this.msgType in MSG_TYPES_WITH_PSEUDO_BUBBLE_LAYOUT
     }
 
     private fun MessageContent?.timestampInsideMessage(): Boolean {
         return when {
-            this == null                            -> false
-            msgType in MSG_TYPES_WITH_LOCATION_DATA -> vectorPreferences.labsRenderLocationsInTimeline()
-            else                                    -> msgType in MSG_TYPES_WITH_TIMESTAMP_INSIDE_MESSAGE
+            this == null -> false
+            else -> msgType in MSG_TYPES_WITH_TIMESTAMP_INSIDE_MESSAGE
         }
     }
 
     private fun MessageContent?.shouldAddMessageOverlay(): Boolean {
         return when {
             this == null || msgType == MessageType.MSGTYPE_BEACON_INFO -> false
-            msgType == MessageType.MSGTYPE_LOCATION                    -> vectorPreferences.labsRenderLocationsInTimeline()
-            else                                                       -> msgType in MSG_TYPES_WITH_TIMESTAMP_INSIDE_MESSAGE
+            else -> msgType in MSG_TYPES_WITH_TIMESTAMP_INSIDE_MESSAGE
         }
     }
 
     private fun TimelineEvent.shouldBuildBubbleLayout(): Boolean {
         val type = root.getClearType()
         if (type in EVENT_TYPES_WITH_BUBBLE_LAYOUT) {
-            val messageContent = getLastMessageContent()
+            val messageContent = getVectorLastMessageContent()
             return messageContent?.msgType !in MSG_TYPES_WITHOUT_BUBBLE_LAYOUT
         }
         return false
@@ -214,10 +211,10 @@ class TimelineMessageLayoutFactory @Inject constructor(
         return when (event?.root?.getClearType()) {
             EventType.KEY_VERIFICATION_DONE,
             EventType.KEY_VERIFICATION_CANCEL -> true
-            EventType.MESSAGE                 -> {
-                event.getLastMessageContent() is MessageVerificationRequestContent
+            EventType.MESSAGE -> {
+                event.getVectorLastMessageContent() is MessageVerificationRequestContent
             }
-            else                              -> false
+            else -> false
         }
     }
 }

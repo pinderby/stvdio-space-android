@@ -1,22 +1,11 @@
 plugins {
     id 'com.android.library'
+    id 'kotlin-android'
 }
 
 android {
-    signingConfigs {
-        debug {
-            storeFile file('.\\signature\\debug.keystore')
-            storePassword 'android'
-            keyPassword 'android'
-            keyAlias 'androiddebugkey'
-        }
-        release {
-            storeFile file('C:\\David\\android-keystore.jks')
-            storePassword 'vcX3tKW9ra$^'
-            keyPassword 'vcX3tKW9ra$^'
-            keyAlias 'android'
-        }
-    }
+    namespace "im.vector.app.config"
+
     compileSdk versions.compileSdk
 
     defaultConfig {
@@ -26,5 +15,9 @@ android {
     compileOptions {
         sourceCompatibility versions.sourceCompat
         targetCompatibility versions.targetCompat
+    }
+
+    kotlinOptions {
+        jvmTarget = "11"
     }
 }

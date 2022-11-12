@@ -25,7 +25,6 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import im.vector.app.R
-import im.vector.app.core.di.ActiveSessionHolder
 import im.vector.app.core.dialogs.ExportKeysDialog
 import im.vector.app.core.extensions.observeEvent
 import im.vector.app.core.extensions.queryExportKeys
@@ -45,7 +44,6 @@ class KeysBackupSetupActivity : SimpleFragmentActivity() {
     private lateinit var viewModel: KeysBackupSetupSharedViewModel
 
     @Inject lateinit var keysExporter: KeysExporter
-    @Inject lateinit var activeSessionHolder: ActiveSessionHolder
 
     private val session by lazy {
         activeSessionHolder.getActiveSession()
@@ -78,15 +76,15 @@ class KeysBackupSetupActivity : SimpleFragmentActivity() {
 
         viewModel.navigateEvent.observeEvent(this) { uxStateEvent ->
             when (uxStateEvent) {
-                KeysBackupSetupSharedViewModel.NAVIGATE_TO_STEP_2      -> {
+                KeysBackupSetupSharedViewModel.NAVIGATE_TO_STEP_2 -> {
                     supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     replaceFragment(views.container, KeysBackupSetupStep2Fragment::class.java)
                 }
-                KeysBackupSetupSharedViewModel.NAVIGATE_TO_STEP_3      -> {
+                KeysBackupSetupSharedViewModel.NAVIGATE_TO_STEP_3 -> {
                     supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     replaceFragment(views.container, KeysBackupSetupStep3Fragment::class.java)
                 }
-                KeysBackupSetupSharedViewModel.NAVIGATE_FINISH         -> {
+                KeysBackupSetupSharedViewModel.NAVIGATE_FINISH -> {
                     val resultIntent = Intent()
                     viewModel.keysVersion.value?.version?.let {
                         resultIntent.putExtra(KEYS_VERSION, it)
@@ -105,7 +103,7 @@ class KeysBackupSetupActivity : SimpleFragmentActivity() {
                             }
                             .show()
                 }
-                KeysBackupSetupSharedViewModel.NAVIGATE_MANUAL_EXPORT  -> {
+                KeysBackupSetupSharedViewModel.NAVIGATE_MANUAL_EXPORT -> {
                     queryExportKeys(session.myUserId, saveStartForActivityResult)
                 }
             }
@@ -183,19 +181,10 @@ class KeysBackupSetupActivity : SimpleFragmentActivity() {
                     }
                     .show()
         } else {
+            @Suppress("DEPRECATION")
             super.onBackPressed()
         }
     }
-
-//    I think this code is useful, but it violates the code quality rules
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        if (item.itemId == android .R. id.  home) {
-//            onBackPressed()
-//            return true
-//        }
-//
-//        return super.onOptionsItemSelected(item)
-//    }
 
     companion object {
         const val KEYS_VERSION = "KEYS_VERSION"

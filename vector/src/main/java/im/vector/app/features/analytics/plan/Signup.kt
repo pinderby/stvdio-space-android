@@ -44,16 +44,6 @@ data class Signup(
         Facebook,
 
         /**
-         * Social login using GitHub.
-         */
-        GitHub,
-
-        /**
-         * Social login using GitLab.
-         */
-        GitLab,
-
-        /**
          * Social login using Google.
          */
         Google,

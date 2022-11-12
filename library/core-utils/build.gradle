@@ -20,20 +20,8 @@ plugins {
 }
 
 android {
-    signingConfigs {
-        debug {
-            storeFile file('.\\signature\\debug.keystore')
-            storePassword 'android'
-            keyPassword 'android'
-            keyAlias 'androiddebugkey'
-        }
-        release {
-            storeFile file('C:\\David\\android-keystore.jks')
-            storePassword 'vcX3tKW9ra$^'
-            keyPassword 'vcX3tKW9ra$^'
-            keyAlias 'android'
-        }
-    }
+    namespace "im.vector.lib.core.utils"
+
     compileSdk versions.compileSdk
     defaultConfig {
         minSdk versions.minSdk

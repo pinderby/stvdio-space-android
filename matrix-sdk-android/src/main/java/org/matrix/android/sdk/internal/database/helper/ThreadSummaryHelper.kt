@@ -181,7 +181,7 @@ internal fun ThreadSummaryEntity.Companion.createOrUpdate(
 
             roomEntity.addIfNecessary(threadSummary)
         }
-        ThreadSummaryUpdateType.ADD     -> {
+        ThreadSummaryUpdateType.ADD -> {
             val rootThreadEventId = threadEventEntity?.rootThreadEventId ?: return
             Timber.i("###THREADS ThreadSummaryHelper ADD for root eventId:$rootThreadEventId")
 
@@ -228,7 +228,8 @@ private fun decryptIfNeeded(cryptoService: CryptoService?, eventEntity: EventEnt
                     payload = result.clearEvent,
                     senderKey = result.senderCurve25519Key,
                     keysClaimed = result.claimedEd25519Key?.let { k -> mapOf("ed25519" to k) },
-                    forwardingCurve25519KeyChain = result.forwardingCurve25519KeyChain
+                    forwardingCurve25519KeyChain = result.forwardingCurve25519KeyChain,
+                    isSafe = result.isSafe
             )
             // Save decryption result, to not decrypt every time we enter the thread list
             eventEntity.setDecryptionResult(result)
@@ -271,7 +272,7 @@ private fun HashMap<String, RoomMemberContent?>.addSenderState(realm: Realm, roo
  * Create an EventEntity for the root thread event or get an existing one.
  */
 private fun createEventEntity(realm: Realm, roomId: String, event: Event, currentTimeMillis: Long): EventEntity {
-    val ageLocalTs = event.unsignedData?.age?.let { currentTimeMillis - it }
+    val ageLocalTs = currentTimeMillis - (event.unsignedData?.age ?: 0)
     return event.toEntity(roomId, SendState.SYNCED, ageLocalTs).copyToRealmOrIgnore(realm, EventInsertType.PAGINATION)
 }
 

@@ -25,11 +25,10 @@ import com.airbnb.mvrx.viewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import im.vector.app.R
-import im.vector.app.core.error.ErrorFormatter
 import im.vector.app.core.platform.VectorBaseActivity
 import im.vector.app.databinding.ActivityCallTransferBinding
+import im.vector.lib.core.utils.compat.getParcelableCompat
 import kotlinx.parcelize.Parcelize
-import javax.inject.Inject
 
 @Parcelize
 data class CallTransferArgs(val callId: String) : Parcelable
@@ -38,8 +37,6 @@ private const val USER_LIST_FRAGMENT_TAG = "USER_LIST_FRAGMENT_TAG"
 
 @AndroidEntryPoint
 class CallTransferActivity : VectorBaseActivity<ActivityCallTransferBinding>() {
-
-    @Inject lateinit var errorFormatter: ErrorFormatter
 
     private lateinit var sectionsPagerAdapter: CallTransferPagerAdapter
 
@@ -59,13 +56,13 @@ class CallTransferActivity : VectorBaseActivity<ActivityCallTransferBinding>() {
             }
         }
 
-        sectionsPagerAdapter = CallTransferPagerAdapter(this)
+        sectionsPagerAdapter = CallTransferPagerAdapter(this, vectorLocale)
         views.callTransferViewPager.adapter = sectionsPagerAdapter
 
         TabLayoutMediator(views.callTransferTabLayout, views.callTransferViewPager) { tab, position ->
             when (position) {
                 CallTransferPagerAdapter.USER_LIST_INDEX -> tab.text = getString(R.string.call_transfer_users_tab_title)
-                CallTransferPagerAdapter.DIAL_PAD_INDEX  -> tab.text = getString(R.string.call_dial_pad_title)
+                CallTransferPagerAdapter.DIAL_PAD_INDEX -> tab.text = getString(R.string.call_dial_pad_title)
             }
         }.attach()
         setupToolbar(views.callTransferToolbar)
@@ -81,7 +78,7 @@ class CallTransferActivity : VectorBaseActivity<ActivityCallTransferBinding>() {
                     val result = CallTransferResult.ConnectWithUserId(views.callTransferConsultCheckBox.isChecked, selectedUser)
                     handleComplete(result)
                 }
-                CallTransferPagerAdapter.DIAL_PAD_INDEX  -> {
+                CallTransferPagerAdapter.DIAL_PAD_INDEX -> {
                     val phoneNumber = sectionsPagerAdapter.dialPadFragment?.getRawInput() ?: return@debouncedClicks
                     val result = CallTransferResult.ConnectWithPhoneNumber(views.callTransferConsultCheckBox.isChecked, phoneNumber)
                     handleComplete(result)
@@ -112,7 +109,7 @@ class CallTransferActivity : VectorBaseActivity<ActivityCallTransferBinding>() {
         }
 
         fun getCallTransferResult(intent: Intent?): CallTransferResult? {
-            return intent?.extras?.getParcelable(EXTRA_TRANSFER_RESULT)
+            return intent?.extras?.getParcelableCompat(EXTRA_TRANSFER_RESULT)
         }
     }
 }

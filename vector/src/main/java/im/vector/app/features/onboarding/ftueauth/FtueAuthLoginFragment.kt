@@ -28,6 +28,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.airbnb.mvrx.withState
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import im.vector.app.R
 import im.vector.app.core.extensions.hideKeyboard
 import im.vector.app.core.extensions.hidePassword
@@ -37,7 +38,8 @@ import im.vector.app.features.login.LoginMode
 import im.vector.app.features.login.SSORedirectRouterActivity
 import im.vector.app.features.login.ServerType
 import im.vector.app.features.login.SignMode
-import im.vector.app.features.login.SocialLoginButtonsView
+import im.vector.app.features.login.SocialLoginButtonsView.Mode
+import im.vector.app.features.login.render
 import im.vector.app.features.onboarding.OnboardingAction
 import im.vector.app.features.onboarding.OnboardingViewEvents
 import im.vector.app.features.onboarding.OnboardingViewState
@@ -52,7 +54,6 @@ import org.matrix.android.sdk.api.failure.isRegistrationDisabled
 import org.matrix.android.sdk.api.failure.isUsernameInUse
 import org.matrix.android.sdk.api.failure.isWeakPassword
 import reactivecircus.flowbinding.android.widget.textChanges
-import javax.inject.Inject
 
 /**
  * In this screen:
@@ -62,7 +63,9 @@ import javax.inject.Inject
  * In signup mode:
  * - the user is asked for login and password
  */
-class FtueAuthLoginFragment @Inject constructor() : AbstractSSOFtueAuthFragment<FragmentLoginBinding>() {
+@AndroidEntryPoint
+class FtueAuthLoginFragment :
+        AbstractSSOFtueAuthFragment<FragmentLoginBinding>() {
 
     private var isSignupMode = false
 
@@ -96,8 +99,8 @@ class FtueAuthLoginFragment @Inject constructor() : AbstractSSOFtueAuthFragment<
     private fun setupAutoFill(state: OnboardingViewState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             when (state.signMode) {
-                SignMode.Unknown            -> error("developer error")
-                SignMode.SignUp             -> {
+                SignMode.Unknown -> error("developer error")
+                SignMode.SignUp -> {
                     views.loginField.setAutofillHints(HintConstants.AUTOFILL_HINT_NEW_USERNAME)
                     views.passwordField.setAutofillHints(HintConstants.AUTOFILL_HINT_NEW_PASSWORD)
                 }
@@ -110,13 +113,11 @@ class FtueAuthLoginFragment @Inject constructor() : AbstractSSOFtueAuthFragment<
         }
     }
 
-    private fun setupSocialLoginButtons(state: OnboardingViewState) {
-        views.loginSocialLoginButtons.mode = when (state.signMode) {
-            SignMode.Unknown            -> error("developer error")
-            SignMode.SignUp             -> SocialLoginButtonsView.Mode.MODE_SIGN_UP
-            SignMode.SignIn,
-            SignMode.SignInWithMatrixId -> SocialLoginButtonsView.Mode.MODE_SIGN_IN
-        }
+    private fun ssoMode(state: OnboardingViewState) = when (state.signMode) {
+        SignMode.Unknown -> error("developer error")
+        SignMode.SignUp -> Mode.MODE_SIGN_UP
+        SignMode.SignIn,
+        SignMode.SignInWithMatrixId -> Mode.MODE_SIGN_IN
     }
 
     private fun submit() {
@@ -169,9 +170,9 @@ class FtueAuthLoginFragment @Inject constructor() : AbstractSSOFtueAuthFragment<
     private fun setupUi(state: OnboardingViewState) {
         views.loginFieldTil.hint = getString(
                 when (state.signMode) {
-                    SignMode.Unknown            -> error("developer error")
-                    SignMode.SignUp             -> R.string.login_signup_username_hint
-                    SignMode.SignIn             -> R.string.login_signin_username_hint
+                    SignMode.Unknown -> error("developer error")
+                    SignMode.SignUp -> R.string.login_signup_username_hint
+                    SignMode.SignIn -> R.string.login_signin_username_hint
                     SignMode.SignInWithMatrixId -> R.string.login_signin_matrix_id_hint
                 }
         )
@@ -184,49 +185,43 @@ class FtueAuthLoginFragment @Inject constructor() : AbstractSSOFtueAuthFragment<
             views.loginPasswordNotice.isVisible = true
         } else {
             val resId = when (state.signMode) {
-                SignMode.Unknown            -> error("developer error")
-                SignMode.SignUp             -> R.string.login_signup_to
-                SignMode.SignIn             -> R.string.login_connect_to
+                SignMode.Unknown -> error("developer error")
+                SignMode.SignUp -> R.string.login_signup_to
+                SignMode.SignIn -> R.string.login_connect_to
                 SignMode.SignInWithMatrixId -> R.string.login_connect_to
             }
 
             when (state.serverType) {
                 ServerType.MatrixOrg -> {
                     views.loginServerIcon.isVisible = true
-                    // --DTM-- Updated
-                    views.loginTitle.text = getString(resId, "STVDIO Space")
-                    views.loginNotice.text = getString(R.string.login_stvdio_server_matrix_org_text)
-//                    views.loginServerIcon.setImageResource(R.drawable.ic_logo_matrix_org)
-//                    views.loginTitle.text = getString(resId, state.selectedHomeserver.userFacingUrl.toReducedUrl())
-//                    views.loginNotice.text = getString(R.string.login_server_matrix_org_text)
+                    views.loginServerIcon.setImageResource(R.drawable.ic_logo_matrix_org)
+                    views.loginTitle.text = getString(resId, state.selectedHomeserver.userFacingUrl.toReducedUrl())
+                    views.loginNotice.text = getString(R.string.login_server_matrix_org_text)
                 }
-                ServerType.EMS       -> {
+                ServerType.EMS -> {
                     views.loginServerIcon.isVisible = true
                     views.loginServerIcon.setImageResource(R.drawable.ic_logo_element_matrix_services)
                     views.loginTitle.text = getString(resId, "Element Matrix Services")
                     views.loginNotice.text = getString(R.string.login_server_modular_text)
                 }
-                ServerType.Other     -> {
+                ServerType.Other -> {
                     views.loginServerIcon.isVisible = false
                     views.loginTitle.text = getString(resId, state.selectedHomeserver.userFacingUrl.toReducedUrl())
                     views.loginNotice.text = getString(R.string.login_server_other_text)
                 }
-                ServerType.Unknown   -> Unit /* Should not happen */
+                ServerType.Unknown -> Unit /* Should not happen */
             }
-            views.loginPasswordNotice.isVisible = false
+//            views.loginPasswordNotice.isVisible = false
 
             if (state.selectedHomeserver.preferredLoginMode is LoginMode.SsoAndPassword) {
                 views.loginSocialLoginContainer.isVisible = true
-                views.loginSocialLoginButtons.ssoIdentityProviders = state.selectedHomeserver.preferredLoginMode.ssoIdentityProviders?.sorted()
-                views.loginSocialLoginButtons.listener = object : SocialLoginButtonsView.InteractionListener {
-                    override fun onProviderSelected(id: String?) {
-                        viewModel.getSsoUrl(
-                                redirectUrl = SSORedirectRouterActivity.VECTOR_REDIRECT_URL,
-                                deviceId = state.deviceId,
-                                providerId = id
-                        )
-                                ?.let { openInCustomTab(it) }
-                    }
+                views.loginSocialLoginButtons.render(state.selectedHomeserver.preferredLoginMode.ssoState, ssoMode(state)) { provider ->
+                    viewModel.fetchSsoUrl(
+                            redirectUrl = SSORedirectRouterActivity.VECTOR_REDIRECT_URL,
+                            deviceId = state.deviceId,
+                            provider = provider
+                    )
+                            ?.let { openInCustomTab(it) }
                 }
             } else {
                 views.loginSocialLoginContainer.isVisible = false
@@ -240,8 +235,8 @@ class FtueAuthLoginFragment @Inject constructor() : AbstractSSOFtueAuthFragment<
 
         views.loginSubmit.text = getString(
                 when (state.signMode) {
-                    SignMode.Unknown            -> error("developer error")
-                    SignMode.SignUp             -> R.string.login_signup_submit
+                    SignMode.Unknown -> error("developer error")
+                    SignMode.SignUp -> R.string.login_signup_submit
                     SignMode.SignIn,
                     SignMode.SignInWithMatrixId -> R.string.login_signin
                 }
@@ -279,23 +274,23 @@ class FtueAuthLoginFragment @Inject constructor() : AbstractSSOFtueAuthFragment<
             throwable.isUsernameInUse() || throwable.isInvalidUsername() -> {
                 views.loginFieldTil.error = errorFormatter.toHumanReadable(throwable)
             }
-            throwable.isLoginEmailUnknown()                              -> {
+            throwable.isLoginEmailUnknown() -> {
                 views.loginFieldTil.error = getString(R.string.login_login_with_email_error)
             }
-            throwable.isInvalidPassword() && spaceInPassword()           -> {
+            throwable.isInvalidPassword() && spaceInPassword() -> {
                 views.passwordFieldTil.error = getString(R.string.auth_invalid_login_param_space_in_password)
             }
-            throwable.isWeakPassword() || throwable.isInvalidPassword()  -> {
+            throwable.isWeakPassword() || throwable.isInvalidPassword() -> {
                 views.passwordFieldTil.error = errorFormatter.toHumanReadable(throwable)
             }
-            throwable.isRegistrationDisabled()                           -> {
+            isSignupMode && throwable.isRegistrationDisabled() -> {
                 MaterialAlertDialogBuilder(requireActivity())
                         .setTitle(R.string.dialog_title_error)
                         .setMessage(getString(R.string.login_registration_disabled))
                         .setPositiveButton(R.string.ok, null)
                         .show()
             }
-            else                                                         -> {
+            else -> {
                 super.onError(throwable)
             }
         }
@@ -307,7 +302,6 @@ class FtueAuthLoginFragment @Inject constructor() : AbstractSSOFtueAuthFragment<
 
         setupUi(state)
         setupAutoFill(state)
-        setupSocialLoginButtons(state)
         setupButtons(state)
 
         if (state.isLoading) {

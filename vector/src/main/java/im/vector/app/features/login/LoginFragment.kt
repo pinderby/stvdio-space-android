@@ -16,9 +16,10 @@
 
 package im.vector.app.features.login
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
+import dagger.hilt.android.AndroidEntryPoint
 import im.vector.app.R
 import im.vector.app.core.extensions.hideKeyboard
 import im.vector.app.core.extensions.hidePassword
@@ -42,8 +44,6 @@ import org.matrix.android.sdk.api.failure.Failure
 import org.matrix.android.sdk.api.failure.MatrixError
 import org.matrix.android.sdk.api.failure.isInvalidPassword
 import reactivecircus.flowbinding.android.widget.textChanges
-import timber.log.Timber
-import javax.inject.Inject
 
 /**
  * In this screen:
@@ -53,7 +53,9 @@ import javax.inject.Inject
  * In signup mode:
  * - the user is asked for login and password
  */
-class LoginFragment @Inject constructor() : AbstractSSOLoginFragment<FragmentLoginBinding>() {
+@AndroidEntryPoint
+class LoginFragment :
+        AbstractSSOLoginFragment<FragmentLoginBinding>() {
 
     private var isSignupMode = false
 
@@ -87,8 +89,8 @@ class LoginFragment @Inject constructor() : AbstractSSOLoginFragment<FragmentLog
     private fun setupAutoFill(state: LoginViewState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             when (state.signMode) {
-                SignMode.Unknown            -> error("developer error")
-                SignMode.SignUp             -> {
+                SignMode.Unknown -> error("developer error")
+                SignMode.SignUp -> {
                     views.loginField.setAutofillHints(HintConstants.AUTOFILL_HINT_NEW_USERNAME)
                     views.passwordField.setAutofillHints(HintConstants.AUTOFILL_HINT_NEW_PASSWORD)
                 }
@@ -101,13 +103,11 @@ class LoginFragment @Inject constructor() : AbstractSSOLoginFragment<FragmentLog
         }
     }
 
-    private fun setupSocialLoginButtons(state: LoginViewState) {
-        views.loginSocialLoginButtons.mode = when (state.signMode) {
-            SignMode.Unknown            -> error("developer error")
-            SignMode.SignUp             -> SocialLoginButtonsView.Mode.MODE_SIGN_UP
-            SignMode.SignIn,
-            SignMode.SignInWithMatrixId -> SocialLoginButtonsView.Mode.MODE_SIGN_IN
-        }
+    private fun ssoMode(state: LoginViewState) = when (state.signMode) {
+        SignMode.Unknown -> error("developer error")
+        SignMode.SignUp -> SocialLoginButtonsView.Mode.MODE_SIGN_UP
+        SignMode.SignIn,
+        SignMode.SignInWithMatrixId -> SocialLoginButtonsView.Mode.MODE_SIGN_IN
     }
 
     private fun submit() {
@@ -157,14 +157,21 @@ class LoginFragment @Inject constructor() : AbstractSSOLoginFragment<FragmentLog
     private fun setupUi(state: LoginViewState) {
         views.loginFieldTil.hint = getString(
                 when (state.signMode) {
-                    SignMode.Unknown            -> error("developer error")
-                    SignMode.SignUp             -> R.string.login_signup_username_hint
-                    SignMode.SignIn             -> R.string.login_signin_username_hint
+                    SignMode.Unknown -> error("developer error")
+                    SignMode.SignUp -> R.string.login_signup_username_hint
+                    SignMode.SignIn -> R.string.login_signin_username_hint
                     SignMode.SignInWithMatrixId -> R.string.login_signin_matrix_id_hint
                 }
         )
 
         // Handle direct signin first
+
+        views.loginPasswordNotice.setOnClickListener {
+            var url = "https://stvd.io/terms-and-conditions/"
+            var i = Intent(Intent.ACTION_VIEW)
+            i.data = Uri.parse(url)
+            startActivity(i)
+        }
         if (state.signMode == SignMode.SignInWithMatrixId) {
             views.loginServerIcon.isVisible = false
             views.loginTitle.text = getString(R.string.login_signin_matrix_id_title)
@@ -172,13 +179,12 @@ class LoginFragment @Inject constructor() : AbstractSSOLoginFragment<FragmentLog
             views.loginPasswordNotice.isVisible = true
         } else {
             val resId = when (state.signMode) {
-                SignMode.Unknown            -> error("developer error")
-                SignMode.SignUp             -> R.string.login_signup_to
-                SignMode.SignIn             -> R.string.login_connect_to
+                SignMode.Unknown -> error("developer error")
+                SignMode.SignUp -> R.string.login_signup_to
+                SignMode.SignIn -> R.string.login_connect_to
                 SignMode.SignInWithMatrixId -> R.string.login_connect_to
             }
 
-            Timber.d(state.serverType.toString())
             when (state.serverType) {
                 ServerType.MatrixOrg -> {
                     views.loginServerIcon.isVisible = true
@@ -187,33 +193,30 @@ class LoginFragment @Inject constructor() : AbstractSSOLoginFragment<FragmentLog
 //                    views.loginTitle.text = getString(resId, state.homeServerUrlFromUser.toReducedUrl())
                     views.loginNotice.text = getString(R.string.login_stvdio_server_matrix_org_text)
                 }
-                ServerType.EMS       -> {
+                ServerType.EMS -> {
                     views.loginServerIcon.isVisible = true
                     views.loginServerIcon.setImageResource(R.drawable.ic_logo_element_matrix_services)
                     views.loginTitle.text = getString(resId, "Element Matrix Services")
                     views.loginNotice.text = getString(R.string.login_server_modular_text)
                 }
-                ServerType.Other     -> {
+                ServerType.Other -> {
                     views.loginServerIcon.isVisible = false
                     views.loginTitle.text = getString(resId, state.homeServerUrlFromUser.toReducedUrl())
                     views.loginNotice.text = getString(R.string.login_server_other_text)
                 }
-                ServerType.Unknown   -> Unit /* Should not happen */
+                ServerType.Unknown -> Unit /* Should not happen */
             }
-            views.loginPasswordNotice.isVisible = false
+//            views.loginPasswordNotice.isVisible = false
 
             if (state.loginMode is LoginMode.SsoAndPassword) {
                 views.loginSocialLoginContainer.isVisible = true
-                views.loginSocialLoginButtons.ssoIdentityProviders = state.loginMode.ssoIdentityProviders?.sorted()
-                views.loginSocialLoginButtons.listener = object : SocialLoginButtonsView.InteractionListener {
-                    override fun onProviderSelected(id: String?) {
-                        loginViewModel.getSsoUrl(
-                                redirectUrl = SSORedirectRouterActivity.VECTOR_REDIRECT_URL,
-                                deviceId = state.deviceId,
-                                providerId = id
-                        )
-                                ?.let { openInCustomTab(it) }
-                    }
+                views.loginSocialLoginButtons.render(state.loginMode.ssoState, ssoMode(state)) { provider ->
+                    loginViewModel.getSsoUrl(
+                            redirectUrl = SSORedirectRouterActivity.VECTOR_REDIRECT_URL,
+                            deviceId = state.deviceId,
+                            providerId = provider?.id
+                    )
+                            ?.let { openInCustomTab(it) }
                 }
             } else {
                 views.loginSocialLoginContainer.isVisible = false
@@ -227,8 +230,8 @@ class LoginFragment @Inject constructor() : AbstractSSOLoginFragment<FragmentLog
 
         views.loginSubmit.text = getString(
                 when (state.signMode) {
-                    SignMode.Unknown            -> error("developer error")
-                    SignMode.SignUp             -> R.string.login_signup_submit
+                    SignMode.Unknown -> error("developer error")
+                    SignMode.SignUp -> R.string.login_signup_submit
                     SignMode.SignIn,
                     SignMode.SignInWithMatrixId -> R.string.login_signin
                 }
@@ -275,7 +278,6 @@ class LoginFragment @Inject constructor() : AbstractSSOLoginFragment<FragmentLog
 
         setupUi(state)
         setupAutoFill(state)
-        setupSocialLoginButtons(state)
         setupButtons(state)
 
         when (state.asyncLoginAction) {
@@ -283,7 +285,7 @@ class LoginFragment @Inject constructor() : AbstractSSOLoginFragment<FragmentLog
                 // Ensure password is hidden
                 views.passwordField.hidePassword()
             }
-            is Fail    -> {
+            is Fail -> {
                 val error = state.asyncLoginAction.error
                 if (error is Failure.ServerError &&
                         error.error.code == MatrixError.M_FORBIDDEN &&
@@ -301,7 +303,7 @@ class LoginFragment @Inject constructor() : AbstractSSOLoginFragment<FragmentLog
                 }
             }
             // Success is handled by the LoginActivity
-            else       -> Unit
+            else -> Unit
         }
 
         when (state.asyncRegistration) {
@@ -310,7 +312,7 @@ class LoginFragment @Inject constructor() : AbstractSSOLoginFragment<FragmentLog
                 views.passwordField.hidePassword()
             }
             // Success is handled by the LoginActivity
-            else       -> Unit
+            else -> Unit
         }
     }
 

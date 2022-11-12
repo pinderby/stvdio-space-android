@@ -30,13 +30,11 @@ import com.airbnb.mvrx.viewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import im.vector.app.R
-import im.vector.app.core.error.ErrorFormatter
 import im.vector.app.core.extensions.replaceFragment
 import im.vector.app.core.platform.SimpleFragmentActivity
 import im.vector.app.core.platform.VectorBaseBottomSheetDialogFragment
 import im.vector.app.features.crypto.recover.SetupMode
 import kotlinx.parcelize.Parcelize
-import javax.inject.Inject
 import kotlin.reflect.KClass
 
 @AndroidEntryPoint
@@ -54,7 +52,6 @@ class SharedSecureStorageActivity :
     ) : Parcelable
 
     private val viewModel: SharedSecureStorageViewModel by viewModel()
-    @Inject lateinit var errorFormatter: ErrorFormatter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,8 +78,8 @@ class SharedSecureStorageActivity :
         val fragment =
                 when (state.step) {
                     SharedSecureStorageViewState.Step.EnterPassphrase -> SharedSecuredStoragePassphraseFragment::class
-                    SharedSecureStorageViewState.Step.EnterKey        -> SharedSecuredStorageKeyFragment::class
-                    SharedSecureStorageViewState.Step.ResetAll        -> SharedSecuredStorageResetAllFragment::class
+                    SharedSecureStorageViewState.Step.EnterKey -> SharedSecuredStorageKeyFragment::class
+                    SharedSecureStorageViewState.Step.ResetAll -> SharedSecuredStorageResetAllFragment::class
                 }
 
         showFragment(fragment)
@@ -90,10 +87,10 @@ class SharedSecureStorageActivity :
 
     private fun observeViewEvents(it: SharedSecureStorageViewEvent?) {
         when (it) {
-            is SharedSecureStorageViewEvent.Dismiss              -> {
+            is SharedSecureStorageViewEvent.Dismiss -> {
                 finish()
             }
-            is SharedSecureStorageViewEvent.Error                -> {
+            is SharedSecureStorageViewEvent.Error -> {
                 MaterialAlertDialogBuilder(this)
                         .setTitle(getString(R.string.dialog_title_error))
                         .setMessage(it.message)
@@ -105,16 +102,16 @@ class SharedSecureStorageActivity :
                         }
                         .show()
             }
-            is SharedSecureStorageViewEvent.ShowModalLoading     -> {
+            is SharedSecureStorageViewEvent.ShowModalLoading -> {
                 showWaitingView()
             }
-            is SharedSecureStorageViewEvent.HideModalLoading     -> {
+            is SharedSecureStorageViewEvent.HideModalLoading -> {
                 hideWaitingView()
             }
-            is SharedSecureStorageViewEvent.UpdateLoadingState   -> {
+            is SharedSecureStorageViewEvent.UpdateLoadingState -> {
                 updateWaitingView(it.waitingData)
             }
-            is SharedSecureStorageViewEvent.FinishSuccess        -> {
+            is SharedSecureStorageViewEvent.FinishSuccess -> {
                 val dataResult = Intent()
                 dataResult.putExtra(EXTRA_DATA_RESULT, it.cypherResult)
                 setResult(RESULT_OK, dataResult)
@@ -123,7 +120,7 @@ class SharedSecureStorageActivity :
             is SharedSecureStorageViewEvent.ShowResetBottomSheet -> {
                 navigator.open4SSetup(this, SetupMode.HARD_RESET)
             }
-            else                                                 -> Unit
+            else -> Unit
         }
     }
 

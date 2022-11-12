@@ -83,23 +83,21 @@ internal class RoomMemberEventHandler @Inject constructor(
             userId: String,
             roomMember: RoomMemberContent
     ) {
-        val roomMemberEntity = RoomMemberEntityFactory.create(
-                roomId,
-                userId,
-                roomMember,
-                // When an update is happening, insertOrUpdate replace existing values with null if they are not provided,
-                // but we want to preserve presence record value and not replace it with null
-                getExistingPresenceState(realm, roomId, userId)
-        )
-        realm.insertOrUpdate(roomMemberEntity)
-    }
-
-    /**
-     * Get the already existing presence state for a specific user & room in order NOT to be replaced in RoomMemberSummaryEntity
-     * by NULL value.
-     */
-    private fun getExistingPresenceState(realm: Realm, roomId: String, userId: String): UserPresenceEntity? {
-        return RoomMemberSummaryEntity.where(realm, roomId, userId).findFirst()?.userPresenceEntity
+        val existingRoomMemberSummary = RoomMemberSummaryEntity.where(realm, roomId, userId).findFirst()
+        if (existingRoomMemberSummary != null) {
+            existingRoomMemberSummary.displayName = roomMember.displayName
+            existingRoomMemberSummary.avatarUrl = roomMember.avatarUrl
+            existingRoomMemberSummary.membership = roomMember.membership
+        } else {
+            val presenceEntity = UserPresenceEntity.where(realm, userId).findFirst()
+            val roomMemberEntity = RoomMemberEntityFactory.create(
+                    roomId,
+                    userId,
+                    roomMember,
+                    presenceEntity
+            )
+            realm.insert(roomMemberEntity)
+        }
     }
 
     private fun saveUserEntityLocallyIfNecessary(
@@ -142,7 +140,8 @@ internal class RoomMemberEventHandler @Inject constructor(
             val previousDisplayName = prevContent?.get("displayname") as? String
             val previousAvatar = prevContent?.get("avatar_url") as? String
 
-            if (previousDisplayName != roomMember.displayName || previousAvatar != roomMember.avatarUrl) {
+            if ((previousDisplayName != null && previousDisplayName != roomMember.displayName) ||
+                    (previousAvatar != null && previousAvatar != roomMember.avatarUrl)) {
                 aggregator.userIdsToFetch.add(eventUserId)
             }
         }

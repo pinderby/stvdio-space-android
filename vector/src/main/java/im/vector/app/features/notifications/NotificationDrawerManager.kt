@@ -20,14 +20,14 @@ import android.os.Handler
 import android.os.HandlerThread
 import androidx.annotation.WorkerThread
 import im.vector.app.ActiveSessionDataSource
-import im.vector.app.BuildConfig
 import im.vector.app.R
+import im.vector.app.core.resources.BuildMeta
 import im.vector.app.core.utils.FirstThrottler
 import im.vector.app.features.displayname.getBestName
 import im.vector.app.features.settings.VectorPreferences
 import org.matrix.android.sdk.api.session.Session
 import org.matrix.android.sdk.api.session.content.ContentUrlResolver
-import org.matrix.android.sdk.api.session.getUser
+import org.matrix.android.sdk.api.session.getUserOrDefault
 import org.matrix.android.sdk.api.util.toMatrixItem
 import timber.log.Timber
 import javax.inject.Inject
@@ -40,13 +40,14 @@ import javax.inject.Singleton
  */
 @Singleton
 class NotificationDrawerManager @Inject constructor(
-        private val context: Context,
+        context: Context,
         private val notificationDisplayer: NotificationDisplayer,
         private val vectorPreferences: VectorPreferences,
         private val activeSessionDataSource: ActiveSessionDataSource,
         private val notifiableEventProcessor: NotifiableEventProcessor,
         private val notificationRenderer: NotificationRenderer,
-        private val notificationEventPersistence: NotificationEventPersistence
+        private val notificationEventPersistence: NotificationEventPersistence,
+        private val buildMeta: BuildMeta,
 ) {
 
     private val handlerThread: HandlerThread = HandlerThread("NotificationDrawerManager", Thread.MIN_PRIORITY)
@@ -72,7 +73,7 @@ class NotificationDrawerManager @Inject constructor(
     }
 
     private fun createInitialNotificationState(): NotificationState {
-        val queuedEvents = notificationEventPersistence.loadEvents(currentSession, factory = { rawEvents ->
+        val queuedEvents = notificationEventPersistence.loadEvents(factory = { rawEvents ->
             NotificationEventQueue(rawEvents.toMutableList(), seenEventIds = CircularCache.create(cacheSize = 25))
         })
         val renderedEvents = queuedEvents.rawEvents().map { ProcessedEvent(ProcessedEvent.Type.KEEP, it) }.toMutableList()
@@ -92,7 +93,7 @@ class NotificationDrawerManager @Inject constructor(
         }
         // If we support multi session, event list should be per userId
         // Currently only manage single session
-        if (BuildConfig.LOW_PRIVACY_LOG_ENABLE) {
+        if (buildMeta.lowPrivacyLoggingEnabled) {
             Timber.d("onNotifiableEventReceived(): $notifiableEvent")
         } else {
             Timber.d("onNotifiableEventReceived(): is push: ${notifiableEvent.canBeReplaced}")
@@ -174,22 +175,22 @@ class NotificationDrawerManager @Inject constructor(
             notificationState.clearAndAddRenderedEvents(eventsToRender)
             val session = currentSession ?: return
             renderEvents(session, eventsToRender)
-            persistEvents(session)
+            persistEvents()
         }
     }
 
-    private fun persistEvents(session: Session) {
+    private fun persistEvents() {
         notificationState.queuedEvents { queuedEvents ->
-            notificationEventPersistence.persistEvents(queuedEvents, session)
+            notificationEventPersistence.persistEvents(queuedEvents)
         }
     }
 
     private fun renderEvents(session: Session, eventsToRender: List<ProcessedEvent<NotifiableEvent>>) {
-        val user = session.getUser(session.myUserId)
+        val user = session.getUserOrDefault(session.myUserId)
         // myUserDisplayName cannot be empty else NotificationCompat.MessagingStyle() will crash
-        val myUserDisplayName = user?.toMatrixItem()?.getBestName() ?: session.myUserId
+        val myUserDisplayName = user.toMatrixItem().getBestName()
         val myUserAvatarUrl = session.contentUrlResolver().resolveThumbnail(
-                contentUrl = user?.avatarUrl,
+                contentUrl = user.avatarUrl,
                 width = avatarSize,
                 height = avatarSize,
                 method = ContentUrlResolver.ThumbnailMethod.SCALE

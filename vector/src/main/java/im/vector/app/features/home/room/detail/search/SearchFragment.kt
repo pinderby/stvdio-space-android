@@ -29,6 +29,7 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.args
 import com.airbnb.mvrx.fragmentViewModel
 import com.airbnb.mvrx.withState
+import dagger.hilt.android.AndroidEntryPoint
 import im.vector.app.R
 import im.vector.app.core.extensions.cleanup
 import im.vector.app.core.extensions.configureWith
@@ -51,12 +52,13 @@ data class SearchArgs(
         val roomAvatarUrl: String?
 ) : Parcelable
 
-class SearchFragment @Inject constructor(
-        private val controller: SearchResultController
-) : VectorBaseFragment<FragmentSearchBinding>(),
+@AndroidEntryPoint
+class SearchFragment :
+        VectorBaseFragment<FragmentSearchBinding>(),
         StateView.EventCallback,
         SearchResultController.Listener {
 
+    @Inject lateinit var controller: SearchResultController
     private val fragmentArgs: SearchArgs by args()
     private val searchViewModel: SearchViewModel by fragmentViewModel()
 
@@ -92,7 +94,7 @@ class SearchFragment @Inject constructor(
                 is Loading -> {
                     views.stateView.state = StateView.State.Loading
                 }
-                is Fail    -> {
+                is Fail -> {
                     views.stateView.state = StateView.State.Error(errorFormatter.toHumanReadable(state.asyncSearchRequest.error))
                 }
                 is Success -> {
@@ -101,7 +103,7 @@ class SearchFragment @Inject constructor(
                             image = ContextCompat.getDrawable(requireContext(), R.drawable.ic_search_no_results)
                     )
                 }
-                else       -> Unit
+                else -> Unit
             }
         } else {
             controller.setData(state)

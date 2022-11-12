@@ -32,12 +32,14 @@ import com.airbnb.epoxy.EpoxyVisibilityTracker
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import im.vector.app.R
 import im.vector.app.core.extensions.cleanup
 import im.vector.app.core.extensions.configureWith
 import im.vector.app.core.extensions.registerStartForActivityResult
 import im.vector.app.core.platform.OnBackPressed
 import im.vector.app.core.platform.VectorBaseFragment
+import im.vector.app.core.platform.VectorMenuProvider
 import im.vector.app.core.resources.ColorProvider
 import im.vector.app.core.utils.colorizeMatchingText
 import im.vector.app.core.utils.isValidUrl
@@ -60,14 +62,17 @@ data class SpaceDirectoryArgs(
         val spaceId: String
 ) : Parcelable
 
-class SpaceDirectoryFragment @Inject constructor(
-        private val epoxyController: SpaceDirectoryController,
-        private val permalinkHandler: PermalinkHandler,
-        private val colorProvider: ColorProvider
-) : VectorBaseFragment<FragmentSpaceDirectoryBinding>(),
+@AndroidEntryPoint
+class SpaceDirectoryFragment :
+        VectorBaseFragment<FragmentSpaceDirectoryBinding>(),
         SpaceDirectoryController.InteractionListener,
         TimelineEventController.UrlClickCallback,
-        OnBackPressed {
+        OnBackPressed,
+        VectorMenuProvider {
+
+    @Inject lateinit var epoxyController: SpaceDirectoryController
+    @Inject lateinit var permalinkHandler: PermalinkHandler
+    @Inject lateinit var colorProvider: ColorProvider
 
     override fun getMenuRes() = R.menu.menu_space_directory
 
@@ -85,16 +90,16 @@ class SpaceDirectoryFragment @Inject constructor(
             bundle.getString(SpaceAddRoomSpaceChooserBottomSheet.BUNDLE_KEY_ACTION)?.let { action ->
                 val spaceId = withState(viewModel) { it.spaceId }
                 when (action) {
-                    SpaceAddRoomSpaceChooserBottomSheet.ACTION_ADD_ROOMS   -> {
+                    SpaceAddRoomSpaceChooserBottomSheet.ACTION_ADD_ROOMS -> {
                         addExistingRoomActivityResult.launch(SpaceManageActivity.newIntent(requireContext(), spaceId, ManageType.AddRooms))
                     }
-                    SpaceAddRoomSpaceChooserBottomSheet.ACTION_ADD_SPACES  -> {
+                    SpaceAddRoomSpaceChooserBottomSheet.ACTION_ADD_SPACES -> {
                         addExistingRoomActivityResult.launch(SpaceManageActivity.newIntent(requireContext(), spaceId, ManageType.AddRoomsOnlySpaces))
                     }
                     SpaceAddRoomSpaceChooserBottomSheet.ACTION_CREATE_ROOM -> {
                         viewModel.handle(SpaceDirectoryViewAction.CreateNewRoom)
                     }
-                    else                                                   -> {
+                    else -> {
                         // nop
                     }
                 }
@@ -123,13 +128,15 @@ class SpaceDirectoryFragment @Inject constructor(
         }
 
         // Hide FAB when list is scrolling
+        views.toolbar.navigationIcon = null
+        views.toolbar.title = getString(R.string.stvdio)
         views.spaceDirectoryList.addOnScrollListener(
                 object : RecyclerView.OnScrollListener() {
                     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                         views.addOrCreateChatRoomButton.removeCallbacks(showFabRunnable)
 
                         when (newState) {
-                            RecyclerView.SCROLL_STATE_IDLE     -> {
+                            RecyclerView.SCROLL_STATE_IDLE -> {
                                 views.addOrCreateChatRoomButton.postDelayed(showFabRunnable, 250)
                             }
                             RecyclerView.SCROLL_STATE_DRAGGING,
@@ -161,56 +168,57 @@ class SpaceDirectoryFragment @Inject constructor(
 
         if (currentParentId == null) {
             // it's the root
-            toolbar?.setTitle(R.string.space_explore_activity_title)
+//            toolbar?.setTitle(R.string.space_explore_activity_title)
         } else {
             val spaceName = state.currentRootSummary?.name
                     ?: state.currentRootSummary?.canonicalAlias
 
             if (spaceName != null) {
-                toolbar?.title = spaceName
-                toolbar?.subtitle = getString(R.string.space_explore_activity_title)
+                toolbar?.title = getString(R.string.stvdio)
+//                toolbar?.subtitle = getString(R.string.space_explore_activity_title)
             } else {
-                toolbar?.title = getString(R.string.space_explore_activity_title)
+//                toolbar?.title = getString(R.string.space_explore_activity_title)
             }
         }
 
         views.addOrCreateChatRoomButton.isVisible = state.canAddRooms
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) = withState(viewModel) { state ->
-        menu.findItem(R.id.spaceAddRoom)?.isVisible = state.canAddRooms
-        menu.findItem(R.id.spaceCreateRoom)?.isVisible = false // Not yet implemented
+    override fun handlePrepareMenu(menu: Menu) {
+        withState(viewModel) { state ->
+            menu.findItem(R.id.spaceAddRoom)?.isVisible = state.canAddRooms
+            menu.findItem(R.id.spaceCreateRoom)?.isVisible = false // Not yet implemented
 
-        menu.findItem(R.id.spaceSearch)?.let { searchItem ->
-            val searchView = searchItem.actionView as SearchView
-            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    return true
-                }
+            menu.findItem(R.id.spaceSearch)?.let { searchItem ->
+                val searchView = searchItem.actionView as SearchView
+                searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                    override fun onQueryTextSubmit(query: String?): Boolean {
+                        return true
+                    }
 
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    onFilterQueryChanged(newText)
-                    return true
-                }
-            })
+                    override fun onQueryTextChange(newText: String?): Boolean {
+                        onFilterQueryChanged(newText)
+                        return true
+                    }
+                })
+            }
         }
-        super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.spaceAddRoom    -> {
+    override fun handleMenuItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.spaceAddRoom -> {
                 withState(viewModel) { state ->
                     addExistingRooms(state.spaceId)
                 }
-                return true
+                true
             }
             R.id.spaceCreateRoom -> {
                 // not implemented yet
-                return true
+                true
             }
+            else -> false
         }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onFilterQueryChanged(query: String?) {

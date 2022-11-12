@@ -18,7 +18,6 @@ package im.vector.app.features.media
 
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.Parcelable
 import android.view.View
 import android.widget.ImageView
@@ -31,8 +30,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.CustomViewTarget
 import com.bumptech.glide.request.target.Target
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.ORIENTATION_USE_EXIF
-import com.github.piasy.biv.view.BigImageView
 import im.vector.app.R
 import im.vector.app.core.di.ActiveSessionHolder
 import im.vector.app.core.files.LocalFilesHelper
@@ -41,14 +38,11 @@ import im.vector.app.core.glide.GlideRequest
 import im.vector.app.core.glide.GlideRequests
 import im.vector.app.core.ui.model.Size
 import im.vector.app.core.utils.DimensionConverter
-import im.vector.app.features.settings.VectorPreferences
 import kotlinx.parcelize.Parcelize
 import org.matrix.android.sdk.api.extensions.tryOrNull
 import org.matrix.android.sdk.api.session.content.ContentUrlResolver
 import org.matrix.android.sdk.api.session.crypto.attachments.ElementToDecrypt
 import org.matrix.android.sdk.api.session.media.PreviewUrlData
-import timber.log.Timber
-import java.io.File
 import javax.inject.Inject
 import kotlin.math.min
 
@@ -70,7 +64,6 @@ class ImageContentRenderer @Inject constructor(
         private val localFilesHelper: LocalFilesHelper,
         private val activeSessionHolder: ActiveSessionHolder,
         private val dimensionConverter: DimensionConverter,
-        private val vectorPreferences: VectorPreferences
 ) {
 
     @Parcelize
@@ -90,6 +83,7 @@ class ImageContentRenderer @Inject constructor(
 
     enum class Mode {
         FULL_SIZE,
+        ANIMATED_THUMBNAIL,
         THUMBNAIL,
         STICKER
     }
@@ -138,11 +132,10 @@ class ImageContentRenderer @Inject constructor(
 
         createGlideRequest(data, mode, imageView, size)
                 .let {
-                    if (vectorPreferences.autoplayAnimatedImages()) it
+                    if (mode == Mode.ANIMATED_THUMBNAIL) it
                     else it.dontAnimate()
                 }
                 .transform(cornerTransformation)
-                // .thumbnail(0.3f)
                 .into(imageView)
     }
 
@@ -173,47 +166,11 @@ class ImageContentRenderer @Inject constructor(
                     .load(resolvedUrl)
         }
 
-        req.override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+        req
                 .fitCenter()
                 .into(target)
     }
 
-    fun renderFitTarget(data: Data, mode: Mode, imageView: ImageView, callback: ((Boolean) -> Unit)? = null) {
-        val size = processSize(data, mode)
-
-        // a11y
-        imageView.contentDescription = data.filename
-
-        createGlideRequest(data, mode, imageView, size)
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                            e: GlideException?,
-                            model: Any?,
-                            target: Target<Drawable>?,
-                            isFirstResource: Boolean
-                    ): Boolean {
-                        callback?.invoke(false)
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                            resource: Drawable?,
-                            model: Any?,
-                            target: Target<Drawable>?,
-                            dataSource: DataSource?,
-                            isFirstResource: Boolean
-                    ): Boolean {
-                        callback?.invoke(true)
-                        return false
-                    }
-                })
-                .fitCenter()
-                .into(imageView)
-    }
-
-    /**
-     * onlyRetrieveFromCache is true!
-     */
     fun renderForSharedElementTransition(data: Data, imageView: ImageView, callback: ((Boolean) -> Unit)? = null) {
         // a11y
         imageView.contentDescription = data.filename
@@ -254,7 +211,6 @@ class ImageContentRenderer @Inject constructor(
                 return false
             }
         })
-                .onlyRetrieveFromCache(true)
                 .fitCenter()
                 .into(imageView)
     }
@@ -274,7 +230,8 @@ class ImageContentRenderer @Inject constructor(
             val contentUrlResolver = activeSessionHolder.getActiveSession().contentUrlResolver()
             val resolvedUrl = when (mode) {
                 Mode.FULL_SIZE,
-                Mode.STICKER   -> resolveUrl(data)
+                Mode.ANIMATED_THUMBNAIL,
+                Mode.STICKER -> resolveUrl(data)
                 Mode.THUMBNAIL -> contentUrlResolver.resolveThumbnail(data.url, size.width, size.height, ContentUrlResolver.ThumbnailMethod.SCALE)
             }
             // Fallback to base url
@@ -290,32 +247,6 @@ class ImageContentRenderer @Inject constructor(
                         }
                     }
         }
-    }
-
-    fun render(data: Data, imageView: BigImageView) {
-        // a11y
-        imageView.contentDescription = data.filename
-
-        val (width, height) = processSize(data, Mode.THUMBNAIL)
-        val contentUrlResolver = activeSessionHolder.getActiveSession().contentUrlResolver()
-        val fullSize = resolveUrl(data)
-        val thumbnail = contentUrlResolver.resolveThumbnail(data.url, width, height, ContentUrlResolver.ThumbnailMethod.SCALE)
-
-        if (fullSize.isNullOrBlank() || thumbnail.isNullOrBlank()) {
-            Timber.w("Invalid urls")
-            return
-        }
-
-        imageView.setImageLoaderCallback(object : DefaultImageLoaderCallback {
-            override fun onSuccess(image: File?) {
-                imageView.ssiv?.orientation = ORIENTATION_USE_EXIF
-            }
-        })
-
-        imageView.showImage(
-                Uri.parse(thumbnail),
-                Uri.parse(fullSize)
-        )
     }
 
     private fun resolveUrl(data: Data) =
@@ -338,14 +269,14 @@ class ImageContentRenderer @Inject constructor(
                     finalHeight = height
                     finalWidth = width
                 }
+                Mode.ANIMATED_THUMBNAIL,
                 Mode.THUMBNAIL -> {
                     finalHeight = min(maxImageWidth * height / width, maxImageHeight)
                     finalWidth = finalHeight * width / height
                 }
-                Mode.STICKER   -> {
+                Mode.STICKER -> {
                     // limit on width
-                    val maxWidthDp = min(dimensionConverter.dpToPx(120), maxImageWidth / 2)
-                    finalWidth = min(dimensionConverter.dpToPx(width), maxWidthDp)
+                    finalWidth = min(dimensionConverter.dpToPx(width), maxImageWidth * 3 / 4)
                     finalHeight = finalWidth * height / width
                 }
             }

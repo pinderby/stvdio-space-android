@@ -22,6 +22,7 @@ import android.animation.ValueAnimator
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.viewpager2.widget.ViewPager2
+import im.vector.app.core.animations.SimpleAnimatorListener
 
 fun ViewPager2.setCurrentItem(
         item: Int,
@@ -40,24 +41,21 @@ fun ViewPager2.setCurrentItem(
         kotlin.runCatching {
             when {
                 isRtl -> fakeDragBy(currentPxToDrag)
-                else  -> fakeDragBy(-currentPxToDrag)
+                else -> fakeDragBy(-currentPxToDrag)
             }
             previousValue = currentValue
         }.onFailure { animator.cancel() }
     }
-    animator.addListener(object : Animator.AnimatorListener {
-        override fun onAnimationStart(animation: Animator?) {
+    animator.addListener(object : SimpleAnimatorListener() {
+        override fun onAnimationStart(animation: Animator) {
             isUserInputEnabled = false
             beginFakeDrag()
         }
 
-        override fun onAnimationEnd(animation: Animator?) {
+        override fun onAnimationEnd(animation: Animator) {
             isUserInputEnabled = true
             endFakeDrag()
         }
-
-        override fun onAnimationCancel(animation: Animator?) = Unit
-        override fun onAnimationRepeat(animation: Animator?) = Unit
     })
     animator.interpolator = interpolator
     animator.duration = duration

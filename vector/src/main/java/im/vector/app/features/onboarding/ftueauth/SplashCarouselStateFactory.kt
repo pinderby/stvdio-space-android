@@ -39,7 +39,7 @@ class SplashCarouselStateFactory @Inject constructor(
 
     fun create(): SplashCarouselState {
         val lightTheme = themeProvider.isLightTheme()
-        fun background(@DrawableRes lightDrawable: Int) = lightDrawable // if (lightTheme) lightDrawable else R.drawable.bg_color_background
+        fun background(@DrawableRes lightDrawable: Int) = if (lightTheme) lightDrawable else R.drawable.bg_color_background
         fun hero(@DrawableRes lightDrawable: Int, @DrawableRes darkDrawable: Int) = if (lightTheme) lightDrawable else darkDrawable
         return SplashCarouselState(
                 listOf(
@@ -62,7 +62,7 @@ class SplashCarouselStateFactory @Inject constructor(
 //                                background(R.drawable.bg_carousel_page_3)
 //                        ),
                         SplashCarouselState.Item(
-                                collaborationTitle().colorTerminatingFullStop(R.attr.colorSurface),
+                                collaborationTitle().colorTerminatingFullStop(R.attr.colorAccent),
                                 R.string.ftue_auth_carousel_welcome_to_stvdio_space,
                                 hero(R.drawable.ic_stvdio_logo_transparent, R.drawable.ic_stvdio_logo_transparent),
                                 background(R.drawable.stvdio_dancer_image_vertical)
@@ -74,7 +74,7 @@ class SplashCarouselStateFactory @Inject constructor(
     private fun collaborationTitle(): Int {
         return when {
             localeProvider.isEnglishSpeaking() -> R.string.stvdio_space
-            else                               -> R.string.ftue_auth_carousel_workplace_title
+            else -> R.string.ftue_auth_carousel_workplace_title
         }
     }
 

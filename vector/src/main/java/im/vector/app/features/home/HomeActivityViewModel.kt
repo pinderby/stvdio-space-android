@@ -23,23 +23,36 @@ import com.airbnb.mvrx.ViewModelContext
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import im.vector.app.config.analyticsConfig
 import im.vector.app.core.di.ActiveSessionHolder
 import im.vector.app.core.di.MavericksAssistedViewModelFactory
 import im.vector.app.core.di.hiltMavericksViewModelFactory
 import im.vector.app.core.platform.VectorViewModel
+import im.vector.app.features.VectorFeatures
+import im.vector.app.features.analytics.AnalyticsConfig
+import im.vector.app.features.analytics.AnalyticsTracker
+import im.vector.app.features.analytics.extensions.toAnalyticsType
+import im.vector.app.features.analytics.plan.Signup
 import im.vector.app.features.analytics.store.AnalyticsStore
+import im.vector.app.features.home.room.list.home.release.ReleaseNotesPreferencesStore
 import im.vector.app.features.login.ReAuthHelper
+import im.vector.app.features.onboarding.AuthenticationDescription
 import im.vector.app.features.raw.wellknown.ElementWellKnown
 import im.vector.app.features.raw.wellknown.getElementWellknown
 import im.vector.app.features.raw.wellknown.isSecureBackupRequired
+import im.vector.app.features.raw.wellknown.withElementWellKnown
 import im.vector.app.features.session.coroutineScope
 import im.vector.app.features.settings.VectorPreferences
+import im.vector.lib.core.utils.compat.getParcelableExtraCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
+import org.matrix.android.sdk.api.account.LocalNotificationSettingsContent
 import org.matrix.android.sdk.api.auth.UIABaseAuth
 import org.matrix.android.sdk.api.auth.UserInteractiveAuthInterceptor
 import org.matrix.android.sdk.api.auth.UserPasswordAuth
@@ -48,14 +61,16 @@ import org.matrix.android.sdk.api.auth.registration.RegistrationFlowResponse
 import org.matrix.android.sdk.api.auth.registration.nextUncompletedStage
 import org.matrix.android.sdk.api.extensions.tryOrNull
 import org.matrix.android.sdk.api.raw.RawService
+import org.matrix.android.sdk.api.session.accountdata.UserAccountDataTypes
 import org.matrix.android.sdk.api.session.crypto.crosssigning.CrossSigningService
 import org.matrix.android.sdk.api.session.crypto.model.CryptoDeviceInfo
 import org.matrix.android.sdk.api.session.crypto.model.MXUsersDevicesMap
-import org.matrix.android.sdk.api.session.getUser
-import org.matrix.android.sdk.api.session.initsync.SyncStatusService
+import org.matrix.android.sdk.api.session.events.model.toModel
+import org.matrix.android.sdk.api.session.getUserOrDefault
 import org.matrix.android.sdk.api.session.pushrules.RuleIds
 import org.matrix.android.sdk.api.session.room.model.Membership
 import org.matrix.android.sdk.api.session.room.roomSummaryQueryParams
+import org.matrix.android.sdk.api.session.sync.SyncRequestState
 import org.matrix.android.sdk.api.settings.LightweightSettingsStorage
 import org.matrix.android.sdk.api.util.awaitCallback
 import org.matrix.android.sdk.api.util.toMatrixItem
@@ -72,7 +87,11 @@ class HomeActivityViewModel @AssistedInject constructor(
         private val reAuthHelper: ReAuthHelper,
         private val analyticsStore: AnalyticsStore,
         private val lightweightSettingsStorage: LightweightSettingsStorage,
-        private val vectorPreferences: VectorPreferences
+        private val vectorPreferences: VectorPreferences,
+        private val analyticsTracker: AnalyticsTracker,
+        private val analyticsConfig: AnalyticsConfig,
+        private val releaseNotesPreferencesStore: ReleaseNotesPreferencesStore,
+        private val vectorFeatures: VectorFeatures,
 ) : VectorViewModel<HomeActivityViewState, HomeActivityViewActions, HomeActivityViewEvents>(initialState) {
 
     @AssistedFactory
@@ -83,8 +102,8 @@ class HomeActivityViewModel @AssistedInject constructor(
     companion object : MavericksViewModelFactory<HomeActivityViewModel, HomeActivityViewState> by hiltMavericksViewModelFactory() {
         override fun initialState(viewModelContext: ViewModelContext): HomeActivityViewState? {
             val activity: HomeActivity = viewModelContext.activity()
-            val args: HomeActivityArgs? = activity.intent.getParcelableExtra(Mavericks.KEY_ARG)
-            return args?.let { HomeActivityViewState(accountCreation = it.accountCreation) }
+            val args: HomeActivityArgs? = activity.intent.getParcelableExtraCompat(Mavericks.KEY_ARG)
+            return args?.let { HomeActivityViewState(authenticationDescription = it.authenticationDescription) }
                     ?: super.initialState(viewModelContext)
         }
     }
@@ -101,7 +120,47 @@ class HomeActivityViewModel @AssistedInject constructor(
         checkSessionPushIsOn()
         observeCrossSigningReset()
         observeAnalytics()
+        observeReleaseNotes()
+        observeLocalNotificationsSilenced()
         initThreadsMigration()
+    }
+
+    private fun observeReleaseNotes() = withState { state ->
+        if (vectorPreferences.isNewAppLayoutEnabled()) {
+            // we don't want to show release notes for new users or after relogin
+            if (state.authenticationDescription == null) {
+                releaseNotesPreferencesStore.appLayoutOnboardingShown.onEach { isAppLayoutOnboardingShown ->
+                    if (!isAppLayoutOnboardingShown) {
+                        _viewEvents.post(HomeActivityViewEvents.ShowReleaseNotes)
+                    }
+                }.launchIn(viewModelScope)
+            } else {
+                // we assume that users which came from auth flow either have seen updates already (relogin) or don't need them (new user)
+                viewModelScope.launch {
+                    releaseNotesPreferencesStore.setAppLayoutOnboardingShown(true)
+                }
+            }
+        }
+    }
+
+    fun shouldAddHttpPusher() = if (vectorPreferences.areNotificationEnabledForDevice()) {
+        val currentSession = activeSessionHolder.getActiveSession()
+        val currentPushers = currentSession.pushersService().getPushers()
+        currentPushers.none { it.deviceId == currentSession.sessionParams.deviceId }
+    } else {
+        false
+    }
+
+    fun observeLocalNotificationsSilenced() {
+        val currentSession = activeSessionHolder.getActiveSession()
+        val deviceId = currentSession.cryptoService().getMyDevice().deviceId
+        viewModelScope.launch {
+            currentSession.accountDataService()
+                    .getLiveUserAccountDataEvent(UserAccountDataTypes.TYPE_LOCAL_NOTIFICATION_SETTINGS + deviceId)
+                    .asFlow()
+                    .map { it.getOrNull()?.content?.toModel<LocalNotificationSettingsContent>()?.isSilenced ?: false }
+                    .onEach { setState { copy(areNotificationsSilenced = it) } }
+        }
     }
 
     private fun observeAnalytics() {
@@ -114,6 +173,32 @@ class HomeActivityViewModel @AssistedInject constructor(
                     }
                     .launchIn(viewModelScope)
         }
+
+//            when (val recentAuthentication = initialState.authenticationDescription) {
+//                is AuthenticationDescription.Register -> {
+//                    viewModelScope.launch {
+//                        analyticsStore.onUserGaveConsent {
+//                            analyticsTracker.capture(Signup(authenticationType = recentAuthentication.type.toAnalyticsType()))
+//                        }
+//                    }
+//                }
+//                AuthenticationDescription.Login -> {
+//                    // do nothing
+//                }
+//                null -> {
+//                    // do nothing
+//                }
+//            }
+//        } else {
+//            _viewEvents.post(HomeActivityViewEvents.ShowNotificationDialog)
+//        }
+    }
+
+    private suspend fun AnalyticsStore.onUserGaveConsent(action: () -> Unit) {
+        userConsentFlow
+                .takeWhile { !it }
+                .onCompletion { action() }
+                .collect()
     }
 
     private fun cleanupFiles() {
@@ -134,9 +219,8 @@ class HomeActivityViewModel @AssistedInject constructor(
                 .onEach { info ->
                     val isVerified = info.getOrNull()?.isTrusted() ?: false
                     if (!isVerified && onceTrusted) {
-                        viewModelScope.launch(Dispatchers.IO) {
-                            val elementWellKnown = rawService.getElementWellknown(safeActiveSession.sessionParams)
-                            sessionHasBeenUnverified(elementWellKnown)
+                        rawService.withElementWellKnown(viewModelScope, safeActiveSession.sessionParams) {
+                            sessionHasBeenUnverified(it)
                         }
                     }
                     onceTrusted = isVerified
@@ -167,7 +251,7 @@ class HomeActivityViewModel @AssistedInject constructor(
                 vectorPreferences.userNotifiedAboutThreads()
             }
             // Migrate users with enabled lab settings
-            vectorPreferences.shouldNotifyUserAboutThreads() && vectorPreferences.shouldMigrateThreads()     -> {
+            vectorPreferences.shouldNotifyUserAboutThreads() && vectorPreferences.shouldMigrateThreads() -> {
                 Timber.i("----> Migrate threads with enabled labs")
                 // If user had io.element.thread enabled then enable the new thread support,
                 // clear cache to sync messages appropriately
@@ -177,7 +261,7 @@ class HomeActivityViewModel @AssistedInject constructor(
                 _viewEvents.post(HomeActivityViewEvents.MigrateThreads(checkSession = false))
             }
             // Enable all users
-            vectorPreferences.shouldMigrateThreads() && vectorPreferences.areThreadMessagesEnabled()         -> {
+            vectorPreferences.shouldMigrateThreads() && vectorPreferences.areThreadMessagesEnabled() -> {
                 Timber.i("----> Try to migrate threads")
                 _viewEvents.post(HomeActivityViewEvents.MigrateThreads(checkSession = true))
             }
@@ -187,25 +271,24 @@ class HomeActivityViewModel @AssistedInject constructor(
     private fun observeInitialSync() {
         val session = activeSessionHolder.getSafeActiveSession() ?: return
 
-        session.syncStatusService().getSyncStatusLive()
-                .asFlow()
+        session.syncService().getSyncRequestStateFlow()
                 .onEach { status ->
                     when (status) {
-                        is SyncStatusService.Status.Idle                   -> {
+                        is SyncRequestState.Idle -> {
                             maybeVerifyOrBootstrapCrossSigning()
                         }
-                        else                                               -> Unit
+                        else -> Unit
                     }
 
                     setState {
                         copy(
-                                syncStatusServiceStatus = status
+                                syncRequestState = status
                         )
                     }
                 }
                 .launchIn(viewModelScope)
 
-        if (session.hasAlreadySynced()) {
+        if (session.syncService().hasAlreadySynced()) {
             maybeVerifyOrBootstrapCrossSigning()
         }
     }
@@ -261,10 +344,10 @@ class HomeActivityViewModel @AssistedInject constructor(
         } else {
             // cross signing keys have been reset
             // Trigger a popup to re-verify
-            // Note: user can be null in case of logout
-            session.getUser(session.myUserId)
-                    ?.toMatrixItem()
-                    ?.let { user ->
+            // Note: user can be unknown in case of logout
+            session.getUserOrDefault(session.myUserId)
+                    .toMatrixItem()
+                    .let { user ->
                         _viewEvents.post(HomeActivityViewEvents.OnCrossSignedInvalidated(user))
                     }
         }
@@ -285,7 +368,7 @@ class HomeActivityViewModel @AssistedInject constructor(
             val isSecureBackupRequired = elementWellKnown?.isSecureBackupRequired() ?: false
 
             // In case of account creation, it is already done before
-            if (initialState.accountCreation) {
+            if (initialState.authenticationDescription is AuthenticationDescription.Register) {
                 if (isSecureBackupRequired) {
                     _viewEvents.post(HomeActivityViewEvents.StartRecoverySetupFlow)
                 } else {
@@ -333,14 +416,30 @@ class HomeActivityViewModel @AssistedInject constructor(
                             // If 4S is forced, force verification
                             _viewEvents.post(HomeActivityViewEvents.ForceVerification(true))
                         } else {
-                            // New session
-                            _viewEvents.post(
-                                    HomeActivityViewEvents.OnNewSession(
-                                            session.getUser(session.myUserId)?.toMatrixItem(),
-                                            // Always send request instead of waiting for an incoming as per recent EW changes
-                                            false
-                                    )
-                            )
+                            // we wan't to check if there is a way to actually verify this session,
+                            // that means that there is another session to verify against, or
+                            // secure backup is setup
+                            val hasTargetDeviceToVerifyAgainst = session
+                                    .cryptoService()
+                                    .getUserDevices(session.myUserId)
+                                    .size >= 2 // this one + another
+                            val is4Ssetup = session.sharedSecretStorageService().isRecoverySetup()
+                            if (hasTargetDeviceToVerifyAgainst || is4Ssetup) {
+                                // New session
+                                _viewEvents.post(
+                                        HomeActivityViewEvents.CurrentSessionNotVerified(
+                                                session.getUserOrDefault(session.myUserId).toMatrixItem(),
+                                                // Always send request instead of waiting for an incoming as per recent EW changes
+                                                false
+                                        )
+                                )
+                            } else {
+                                _viewEvents.post(
+                                        HomeActivityViewEvents.CurrentSessionCannotBeVerified(
+                                                session.getUserOrDefault(session.myUserId).toMatrixItem(),
+                                        )
+                                )
+                            }
                         }
                     }
                 }
@@ -357,7 +456,7 @@ class HomeActivityViewModel @AssistedInject constructor(
                         // Check this is not an SSO account
                         if (session.homeServerCapabilitiesService().getHomeServerCapabilities().canChangePassword) {
                             // Ask password to the user: Upgrade security
-                            _viewEvents.post(HomeActivityViewEvents.AskPasswordToInitCrossSigning(session.getUser(session.myUserId)?.toMatrixItem()))
+                            _viewEvents.post(HomeActivityViewEvents.AskPasswordToInitCrossSigning(session.getUserOrDefault(session.myUserId).toMatrixItem()))
                         }
                         // Else (SSO) just ignore for the moment
                     } else {
@@ -395,7 +494,7 @@ class HomeActivityViewModel @AssistedInject constructor(
             HomeActivityViewActions.PushPromptHasBeenReviewed -> {
                 vectorPreferences.setDidAskUserToEnableSessionPush()
             }
-            HomeActivityViewActions.ViewStarted               -> {
+            HomeActivityViewActions.ViewStarted -> {
                 initialize()
             }
         }

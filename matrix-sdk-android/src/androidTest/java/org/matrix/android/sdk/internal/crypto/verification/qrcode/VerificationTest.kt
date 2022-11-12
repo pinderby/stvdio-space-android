@@ -19,6 +19,7 @@ package org.matrix.android.sdk.internal.crypto.verification.qrcode
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.amshove.kluent.shouldBe
 import org.junit.FixMethodOrder
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
@@ -41,6 +42,7 @@ import kotlin.coroutines.resume
 
 @RunWith(AndroidJUnit4::class)
 @FixMethodOrder(MethodSorters.JVM)
+@Ignore
 class VerificationTest : InstrumentedTest {
 
     data class ExpectedResult(
@@ -162,7 +164,7 @@ class VerificationTest : InstrumentedTest {
         val aliceSession = cryptoTestData.firstSession
         val bobSession = cryptoTestData.secondSession!!
 
-        testHelper.doSync<Unit> { callback ->
+        testHelper.waitForCallback<Unit> { callback ->
             aliceSession.cryptoService().crossSigningService()
                     .initializeCrossSigning(
                             object : UserInteractiveAuthInterceptor {
@@ -179,7 +181,7 @@ class VerificationTest : InstrumentedTest {
                     )
         }
 
-        testHelper.doSync<Unit> { callback ->
+        testHelper.waitForCallback<Unit> { callback ->
             bobSession.cryptoService().crossSigningService()
                     .initializeCrossSigning(
                             object : UserInteractiveAuthInterceptor {
@@ -259,7 +261,11 @@ class VerificationTest : InstrumentedTest {
 
         val aliceSessionToVerify = testHelper.createAccount(TestConstants.USER_ALICE, defaultSessionParams)
         val aliceSessionThatVerifies = testHelper.logIntoAccount(aliceSessionToVerify.myUserId, TestConstants.PASSWORD, defaultSessionParams)
-        val aliceSessionThatReceivesCanceledEvent = testHelper.logIntoAccount(aliceSessionToVerify.myUserId, TestConstants.PASSWORD, defaultSessionParams)
+        val aliceSessionThatReceivesCanceledEvent = testHelper.logIntoAccount(
+                aliceSessionToVerify.myUserId,
+                TestConstants.PASSWORD,
+                defaultSessionParams
+        )
 
         val verificationMethods = listOf(VerificationMethod.SAS, VerificationMethod.QR_CODE_SCAN, VerificationMethod.QR_CODE_SHOW)
 
@@ -284,11 +290,9 @@ class VerificationTest : InstrumentedTest {
                 otherDevices = listOfNotNull(aliceSessionThatVerifies.sessionParams.deviceId, aliceSessionThatReceivesCanceledEvent.sessionParams.deviceId),
         )
 
-        testHelper.waitWithLatch { latch ->
-            testHelper.retryPeriodicallyWithLatch(latch) {
-                val requests = serviceOfUserWhoReceivesCancellation.getExistingVerificationRequests(aliceSessionToVerify.myUserId)
-                requests.any { it.cancelConclusion == CancelCode.AcceptedByAnotherDevice }
-            }
+        testHelper.retryPeriodically {
+            val requests = serviceOfUserWhoReceivesCancellation.getExistingVerificationRequests(aliceSessionToVerify.myUserId)
+            requests.any { it.cancelConclusion == CancelCode.AcceptedByAnotherDevice }
         }
 
         testHelper.signOutAndClose(aliceSessionToVerify)

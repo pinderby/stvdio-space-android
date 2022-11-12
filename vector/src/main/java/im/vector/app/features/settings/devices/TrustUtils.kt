@@ -19,6 +19,7 @@ package im.vector.app.features.settings.devices
 import org.matrix.android.sdk.api.session.crypto.crosssigning.DeviceTrustLevel
 import org.matrix.android.sdk.api.session.crypto.model.RoomEncryptionTrustLevel
 
+// TODO Replace usage by the use case GetEncryptionTrustLevelForDeviceUseCase
 object TrustUtils {
 
     fun shieldForTrust(
@@ -41,7 +42,7 @@ object TrustUtils {
                     }
                 }
             }
-            else          -> {
+            else -> {
                 if (legacyMode) {
                     // use local trust
                     if (deviceTrustLevel?.locallyVerified == true) {
@@ -55,8 +56,8 @@ object TrustUtils {
                         when {
                             deviceTrustLevel?.crossSigningVerified == true -> RoomEncryptionTrustLevel.Trusted
 
-                            deviceTrustLevel?.locallyVerified == true      -> RoomEncryptionTrustLevel.Default
-                            else                                           -> RoomEncryptionTrustLevel.Warning
+                            deviceTrustLevel?.locallyVerified == true -> RoomEncryptionTrustLevel.Default
+                            else -> RoomEncryptionTrustLevel.Warning
                         }
                     } else {
                         // The current session is untrusted, so displays others in black

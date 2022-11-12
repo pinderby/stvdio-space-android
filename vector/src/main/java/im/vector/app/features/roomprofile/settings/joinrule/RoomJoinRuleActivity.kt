@@ -29,7 +29,6 @@ import com.airbnb.mvrx.viewModel
 import com.airbnb.mvrx.withState
 import dagger.hilt.android.AndroidEntryPoint
 import im.vector.app.R
-import im.vector.app.core.error.ErrorFormatter
 import im.vector.app.core.extensions.addFragment
 import im.vector.app.core.extensions.commitTransaction
 import im.vector.app.core.extensions.toMvRxBundle
@@ -43,7 +42,7 @@ import im.vector.app.features.roomprofile.settings.joinrule.advanced.RoomJoinRul
 import im.vector.app.features.roomprofile.settings.joinrule.advanced.RoomJoinRuleChooseRestrictedFragment
 import im.vector.app.features.roomprofile.settings.joinrule.advanced.RoomJoinRuleChooseRestrictedState
 import im.vector.app.features.roomprofile.settings.joinrule.advanced.RoomJoinRuleChooseRestrictedViewModel
-import javax.inject.Inject
+import im.vector.lib.core.utils.compat.getParcelableCompat
 
 @AndroidEntryPoint
 class RoomJoinRuleActivity : VectorBaseActivity<ActivitySimpleBinding>() {
@@ -52,13 +51,10 @@ class RoomJoinRuleActivity : VectorBaseActivity<ActivitySimpleBinding>() {
 
     private lateinit var roomProfileArgs: RoomProfileArgs
 
-    @Inject
-    lateinit var errorFormatter: ErrorFormatter
-
     val viewModel: RoomJoinRuleChooseRestrictedViewModel by viewModel()
 
     override fun initUiAndData() {
-        roomProfileArgs = intent?.extras?.getParcelable(Mavericks.KEY_ARG) ?: return
+        roomProfileArgs = intent?.extras?.getParcelableCompat(Mavericks.KEY_ARG) ?: return
         if (isFirstCreation()) {
             addFragment(
                     views.simpleFragmentContainer,
@@ -75,10 +71,10 @@ class RoomJoinRuleActivity : VectorBaseActivity<ActivitySimpleBinding>() {
                 Uninitialized -> {
                     // nop
                 }
-                is Loading    -> {
+                is Loading -> {
                     views.simpleActivityWaitingView.isVisible = true
                 }
-                is Success    -> {
+                is Success -> {
                     withState(viewModel) { state ->
                         if (state.didSwitchToReplacementRoom) {
                             // we should navigate to new room
@@ -87,7 +83,7 @@ class RoomJoinRuleActivity : VectorBaseActivity<ActivitySimpleBinding>() {
                         finish()
                     }
                 }
-                is Fail       -> {
+                is Fail -> {
                     views.simpleActivityWaitingView.isVisible = false
                     toast(errorFormatter.toHumanReadable(it.error))
                 }
@@ -97,7 +93,7 @@ class RoomJoinRuleActivity : VectorBaseActivity<ActivitySimpleBinding>() {
         viewModel.observeViewEvents {
             when (it) {
                 RoomJoinRuleChooseRestrictedEvents.NavigateToChooseRestricted -> navigateToChooseRestricted()
-                is RoomJoinRuleChooseRestrictedEvents.NavigateToUpgradeRoom   -> navigateToUpgradeRoom(it)
+                is RoomJoinRuleChooseRestrictedEvents.NavigateToUpgradeRoom -> navigateToUpgradeRoom(it)
             }
         }
 

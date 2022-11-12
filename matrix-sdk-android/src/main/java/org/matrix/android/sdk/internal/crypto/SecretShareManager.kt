@@ -150,14 +150,14 @@ internal class SecretShareManager @Inject constructor(
             // we can share the secret
 
             val secretValue = when (secretName) {
-                MASTER_KEY_SSSS_NAME       -> cryptoStore.getCrossSigningPrivateKeys()?.master
+                MASTER_KEY_SSSS_NAME -> cryptoStore.getCrossSigningPrivateKeys()?.master
                 SELF_SIGNING_KEY_SSSS_NAME -> cryptoStore.getCrossSigningPrivateKeys()?.selfSigned
                 USER_SIGNING_KEY_SSSS_NAME -> cryptoStore.getCrossSigningPrivateKeys()?.user
                 KEYBACKUP_SECRET_SSSS_NAME -> cryptoStore.getKeyBackupRecoveryKeyInfo()?.recoveryKey
                         ?.let {
                             extractCurveKeyFromRecoveryKey(it)?.toBase64NoPadding()
                         }
-                else                       -> null
+                else -> null
             }
             if (secretValue == null) {
                 Timber.tag(loggerTag.value)
@@ -267,10 +267,21 @@ internal class SecretShareManager @Inject constructor(
             Timber.tag(loggerTag.value).e("onSecretSend() :Received unencrypted secret send event")
             return
         }
+        // no need to download keys, after a verification we already forced download
+        val sendingDevice = toDevice.getSenderKey()?.let { cryptoStore.deviceWithIdentityKey(it) }
+        if (sendingDevice == null) {
+            Timber.tag(loggerTag.value).e("onSecretSend() : Ignore secret from unknown  device ${toDevice.getSenderKey()}")
+            return
+        }
 
         // Was that sent by us?
-        if (toDevice.senderId != credentials.userId) {
+        if (sendingDevice.userId != credentials.userId) {
             Timber.tag(loggerTag.value).e("onSecretSend() : Ignore secret from other user ${toDevice.senderId}")
+            return
+        }
+
+        if (!sendingDevice.isVerified) {
+            Timber.tag(loggerTag.value).e("onSecretSend() : Ignore secret from untrusted device ${toDevice.getSenderKey()}")
             return
         }
 

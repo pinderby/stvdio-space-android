@@ -26,6 +26,7 @@ import org.matrix.android.sdk.api.extensions.tryOrNull
 import org.matrix.android.sdk.api.listeners.ProgressListener
 import org.matrix.android.sdk.api.session.content.ContentAttachmentData
 import org.matrix.android.sdk.api.session.crypto.model.EncryptedFileInfo
+import org.matrix.android.sdk.api.session.events.model.Content
 import org.matrix.android.sdk.api.session.events.model.toContent
 import org.matrix.android.sdk.api.session.events.model.toModel
 import org.matrix.android.sdk.api.session.room.model.message.MessageAudioContent
@@ -192,7 +193,7 @@ internal class UploadContentWorker(val context: Context, params: WorkerParameter
                     })
                             .let { videoCompressionResult ->
                                 when (videoCompressionResult) {
-                                    is VideoCompressionResult.Success           -> {
+                                    is VideoCompressionResult.Success -> {
                                         val compressedFile = videoCompressionResult.compressedFile
                                         var compressedWidth: Int? = null
                                         var compressedHeight: Int? = null
@@ -407,15 +408,18 @@ internal class UploadContentWorker(val context: Context, params: WorkerParameter
             newAttachmentAttributes: NewAttachmentAttributes
     ) {
         localEchoRepository.updateEcho(eventId) { _, event ->
-            val messageContent: MessageContent? = event.asDomain().content.toModel()
+            val content: Content? = event.asDomain().content
+            val messageContent: MessageContent? = content.toModel()
+            // Retrieve potential additional content from the original event
+            val additionalContent = content.orEmpty() - messageContent?.toContent().orEmpty().keys
             val updatedContent = when (messageContent) {
                 is MessageImageContent -> messageContent.update(url, encryptedFileInfo, newAttachmentAttributes)
                 is MessageVideoContent -> messageContent.update(url, encryptedFileInfo, thumbnailUrl, thumbnailEncryptedFileInfo, newAttachmentAttributes)
-                is MessageFileContent  -> messageContent.update(url, encryptedFileInfo, newAttachmentAttributes.newFileSize)
+                is MessageFileContent -> messageContent.update(url, encryptedFileInfo, newAttachmentAttributes.newFileSize)
                 is MessageAudioContent -> messageContent.update(url, encryptedFileInfo, newAttachmentAttributes.newFileSize)
-                else                   -> messageContent
+                else -> messageContent
             }
-            event.content = ContentMapper.map(updatedContent.toContent())
+            event.content = ContentMapper.map(updatedContent.toContent().plus(additionalContent))
         }
     }
 

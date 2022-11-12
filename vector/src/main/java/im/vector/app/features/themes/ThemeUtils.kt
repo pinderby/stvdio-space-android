@@ -27,8 +27,8 @@ import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.preference.PreferenceManager
 import im.vector.app.R
-import im.vector.app.core.di.DefaultSharedPreferences
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicReference
 
@@ -46,7 +46,7 @@ object ThemeUtils {
     private const val THEME_BLACK_VALUE = "black"
 
     // The default theme
-    private const val DEFAULT_THEME = THEME_DARK_VALUE
+    private const val DEFAULT_THEME = SYSTEM_THEME_VALUE
 
     private var currentTheme = AtomicReference<String>(null)
 
@@ -84,7 +84,7 @@ object ThemeUtils {
     fun getApplicationTheme(context: Context): String {
         val currentTheme = this.currentTheme.get()
         return if (currentTheme == null) {
-            val prefs = DefaultSharedPreferences.getInstance(context)
+            val prefs = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
             var themeFromPref = prefs.getString(APPLICATION_THEME_KEY, DEFAULT_THEME) ?: DEFAULT_THEME
             if (themeFromPref == "status") {
                 // Migrate to the default theme
@@ -116,9 +116,9 @@ object ThemeUtils {
         context.setTheme(
                 when (aTheme) {
                     SYSTEM_THEME_VALUE -> if (isSystemDarkTheme(context.resources)) R.style.Theme_Vector_Dark else R.style.Theme_Vector_Light
-                    THEME_DARK_VALUE   -> R.style.Theme_Vector_Dark
-                    THEME_BLACK_VALUE  -> R.style.Theme_Vector_Black
-                    else               -> R.style.Theme_Vector_Light
+                    THEME_DARK_VALUE -> R.style.Theme_Vector_Dark
+                    THEME_BLACK_VALUE -> R.style.Theme_Vector_Black
+                    else -> R.style.Theme_Vector_Light
                 }
         )
 
@@ -136,8 +136,8 @@ object ThemeUtils {
     fun setActivityTheme(activity: Activity, otherThemes: ActivityOtherThemes) {
         when (getApplicationTheme(activity)) {
             SYSTEM_THEME_VALUE -> if (isSystemDarkTheme(activity.resources)) activity.setTheme(otherThemes.dark)
-            THEME_DARK_VALUE   -> activity.setTheme(otherThemes.dark)
-            THEME_BLACK_VALUE  -> activity.setTheme(otherThemes.black)
+            THEME_DARK_VALUE -> activity.setTheme(otherThemes.dark)
+            THEME_BLACK_VALUE -> activity.setTheme(otherThemes.black)
         }
 
         mColorByAttr.clear()

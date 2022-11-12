@@ -20,29 +20,17 @@ import android.content.Context
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
-import im.vector.app.core.services.VectorSyncService
+import im.vector.app.core.services.VectorSyncAndroidService
 import im.vector.app.features.session.VectorSessionStore
 import org.matrix.android.sdk.api.session.Session
 import org.matrix.android.sdk.api.session.crypto.keysbackup.KeysBackupState
-import org.matrix.android.sdk.api.session.sync.FilterService
 import timber.log.Timber
-
-fun Session.configureAndStart(context: Context, startSyncing: Boolean = true) {
-    Timber.i("Configure and start session for $myUserId")
-    open()
-    filterService().setFilter(FilterService.FilterPreset.ElementFilter)
-    if (startSyncing) {
-        startSyncing(context)
-    }
-    pushersService().refreshPushers()
-    context.singletonEntryPoint().webRtcCallManager().checkForProtocolsSupportIfNeeded()
-}
 
 fun Session.startSyncing(context: Context) {
     val applicationContext = context.applicationContext
-    if (!hasAlreadySynced()) {
+    if (!syncService().hasAlreadySynced()) {
         // initial sync is done as a service so it can continue below app lifecycle
-        VectorSyncService.newOneShotIntent(
+        VectorSyncAndroidService.newOneShotIntent(
                 context = applicationContext,
                 sessionId = sessionId
         )
@@ -57,7 +45,7 @@ fun Session.startSyncing(context: Context) {
     } else {
         val isAtLeastStarted = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
         Timber.v("--> is at least started? $isAtLeastStarted")
-        startSync(isAtLeastStarted)
+        syncService().startSync(isAtLeastStarted)
     }
 }
 

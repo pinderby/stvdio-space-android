@@ -91,7 +91,10 @@ data class PollResponseData(
         val totalVotes: Int = 0,
         val winnerVoteCount: Int = 0,
         val isClosed: Boolean = false
-) : Parcelable
+) : Parcelable {
+
+    fun getVoteSummaryOfAnOption(optionId: String) = votes?.get(optionId)
+}
 
 @Parcelize
 data class PollVoteSummaryData(
@@ -103,7 +106,9 @@ enum class E2EDecoration {
     NONE,
     WARN_IN_CLEAR,
     WARN_SENT_BY_UNVERIFIED,
-    WARN_SENT_BY_UNKNOWN
+    WARN_SENT_BY_UNKNOWN,
+    WARN_SENT_BY_DELETED_SESSION,
+    WARN_UNSAFE_KEY
 }
 
 enum class SendStateDecoration {

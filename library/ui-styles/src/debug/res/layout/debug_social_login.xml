@@ -34,18 +34,6 @@
             android:text="Continue with XXX" />
 
         <Button
-            style="@style/Widget.Vector.Button.Outlined.SocialLogin.Github.Light"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Continue with XXX" />
-
-        <Button
-            style="@style/Widget.Vector.Button.Outlined.SocialLogin.Gitlab.Light"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Continue with XXX" />
-
-        <Button
             style="@style/Widget.Vector.Button.Outlined.SocialLogin.Apple.Light"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -81,18 +69,6 @@
 
         <Button
             style="@style/Widget.Vector.Button.Outlined.SocialLogin.Facebook.Dark"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Continue with XXX" />
-
-        <Button
-            style="@style/Widget.Vector.Button.Outlined.SocialLogin.Github.Dark"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Continue with XXX" />
-
-        <Button
-            style="@style/Widget.Vector.Button.Outlined.SocialLogin.Gitlab.Dark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Continue with XXX" />
