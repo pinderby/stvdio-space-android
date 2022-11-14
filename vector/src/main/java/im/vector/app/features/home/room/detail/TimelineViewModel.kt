@@ -168,9 +168,6 @@ class TimelineViewModel @AssistedInject constructor(
     // Slot to keep a pending action during permission request
     var pendingAction: RoomDetailAction? = null
 
-    // Slot to keep a pending event during permission request
-    var pendingEvent: RoomDetailViewEvents? = null
-
     private var trackUnreadMessages = AtomicBoolean(false)
     private var mostRecentDisplayedEvent: TimelineEvent? = null
 
@@ -962,8 +959,9 @@ class TimelineViewModel @AssistedInject constructor(
             tryOrNull { Uri.parse(mxcUrl) }?.let {
                 _viewEvents.post(
                         RoomDetailViewEvents.OpenFile(
+                                action.messageFileContent.mimeType,
                                 it,
-                                action.messageFileContent.mimeType
+                                null
                         )
                 )
             }
@@ -992,8 +990,9 @@ class TimelineViewModel @AssistedInject constructor(
                     session.fileService().getTemporarySharableURI(action.messageFileContent)?.let { uri ->
                         _viewEvents.post(
                                 RoomDetailViewEvents.OpenFile(
+                                        action.messageFileContent.mimeType,
                                         uri,
-                                        action.messageFileContent.mimeType
+                                        null
                                 )
                         )
                     }

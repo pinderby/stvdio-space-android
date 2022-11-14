@@ -145,17 +145,6 @@ fun startAddGoogleAccountIntent(context: Context, activityResultLauncher: Activi
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-fun startInstallFromSourceIntent(context: Context, activityResultLauncher: ActivityResultLauncher<Intent>) {
-    val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-            .setData(Uri.parse(String.format("package:%s", context.packageName)))
-    try {
-        activityResultLauncher.launch(intent)
-    } catch (activityNotFoundException: ActivityNotFoundException) {
-        context.toast(R.string.error_no_external_application_found)
-    }
-}
-
 fun startSharePlainTextIntent(
         context: Context,
         activityResultLauncher: ActivityResultLauncher<Intent>?,
