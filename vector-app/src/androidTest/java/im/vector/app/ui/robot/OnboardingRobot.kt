@@ -96,7 +96,7 @@ class OnboardingRobot {
         clickOn(R.id.useCaseOptionOne)
 
         waitUntilViewVisible(withId(R.id.createAccountRoot))
-        clickOn(R.id.editServerButton)
+//        clickOn(R.id.editServerButton)
         writeTo(R.id.chooseServerInput, homeServerUrl)
         closeSoftKeyboard()
         clickOn(R.id.chooseServerSubmit)
@@ -121,7 +121,7 @@ class OnboardingRobot {
         clickOn(R.id.loginSplashAlreadyHaveAccount)
 
         waitUntilViewVisible(withId(R.id.loginRoot))
-        clickOn(R.id.editServerButton)
+//        clickOn(R.id.editServerButton)
         writeTo(R.id.chooseServerInput, homeServerUrl)
         closeSoftKeyboard()
         clickOn(R.id.chooseServerSubmit)

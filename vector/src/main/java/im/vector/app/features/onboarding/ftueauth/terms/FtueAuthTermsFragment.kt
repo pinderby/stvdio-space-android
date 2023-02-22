@@ -118,7 +118,7 @@ class FtueAuthTermsFragment :
 
     override fun updateWithState(state: OnboardingViewState) {
         val homeserverName = state.selectedHomeserver.userFacingUrl.toReducedUrl()
-        views.termsHeaderSubtitle.text = getString(R.string.ftue_auth_terms_subtitle, homeserverName)
+        views.termsHeaderSubtitle.text = getString(R.string.ftue_auth_terms_subtitle, homeserverName).replace("matrix.org", "STVDIO SPACE")
         policyController.homeServer = homeserverName
         renderState()
     }

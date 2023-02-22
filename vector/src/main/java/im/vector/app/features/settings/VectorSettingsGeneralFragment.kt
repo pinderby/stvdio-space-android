@@ -208,11 +208,11 @@ class VectorSettingsGeneralFragment :
 
         // user account
         findPreference<VectorPreference>(VectorPreferences.SETTINGS_LOGGED_IN_PREFERENCE_KEY)!!
-                .summary = session.myUserId
+                .summary = session.myUserId.replace(":matrix.org", "")
 
         // homeserver
-        findPreference<VectorPreference>(VectorPreferences.SETTINGS_HOME_SERVER_PREFERENCE_KEY)!!
-                .summary = session.sessionParams.homeServerUrl
+//        findPreference<VectorPreference>(VectorPreferences.SETTINGS_HOME_SERVER_PREFERENCE_KEY)!!
+//                .summary = session.sessionParams.homeServerUrl
 
         // Contacts
         setContactsPreferences()

@@ -251,6 +251,7 @@ class TimelineFragment :
     @Inject lateinit var permalinkFactory: PermalinkFactory
 
     companion object {
+        var canSend = false
         const val MAX_TYPING_MESSAGE_USERS_COUNT = 4
     }
 
@@ -1131,19 +1132,22 @@ class TimelineFragment :
             lazyLoadedViews.inviteView(false)?.isVisible = false
 
             if (mainState.tombstoneEvent == null) {
+                var res: NotificationAreaView.State
                 when (messageComposerState.canSendMessage) {
                     CanSendStatus.Allowed -> {
-                        NotificationAreaView.State.Hidden
+                        res = NotificationAreaView.State.Hidden
+                        canSend = true
                     }
                     CanSendStatus.NoPermission -> {
-                        NotificationAreaView.State.NoPermissionToPost
+                        res = NotificationAreaView.State.NoPermissionToPost
+                        canSend = false
                     }
                     is CanSendStatus.UnSupportedE2eAlgorithm -> {
-                        NotificationAreaView.State.UnsupportedAlgorithm(mainState.isAllowedToSetupEncryption)
+                        canSend = false
+                        res = NotificationAreaView.State.UnsupportedAlgorithm(mainState.isAllowedToSetupEncryption)
                     }
-                }.let {
-                    views.notificationAreaView.render(it)
                 }
+                views.notificationAreaView.render(res)
             } else {
                 views.hideComposerViews()
                 views.notificationAreaView.render(NotificationAreaView.State.Tombstone(mainState.tombstoneEvent))

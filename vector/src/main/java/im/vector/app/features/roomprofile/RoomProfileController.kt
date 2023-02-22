@@ -319,7 +319,7 @@ class RoomProfileController @Inject constructor(
             buildProfileAction(
                     id = "roomId",
                     title = stringProvider.getString(R.string.room_settings_room_internal_id),
-                    subtitle = roomSummary.roomId,
+                    subtitle = roomSummary.roomId.replace(":matrix.org", ""),
                     divider = true,
                     editable = false,
                     action = { callback?.onRoomIdClicked() }

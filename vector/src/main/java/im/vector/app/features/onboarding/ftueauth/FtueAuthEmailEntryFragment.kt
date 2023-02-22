@@ -82,7 +82,7 @@ class FtueAuthEmailEntryFragment : AbstractFtueAuthFragment<FragmentFtueEmailInp
     private fun String.isEmptyAndOptional() = isEmpty() && !params.mandatory
 
     override fun updateWithState(state: OnboardingViewState) {
-        views.emailEntryHeaderSubtitle.text = getString(R.string.ftue_auth_email_subtitle, "STVDIO Space")
+        views.emailEntryHeaderSubtitle.text = getString(R.string.ftue_auth_email_subtitle, "STVDIO SPACE")
 
         if (!views.emailEntryInput.hasContent()) {
             views.emailEntryInput.editText().setText(state.registrationState.email)

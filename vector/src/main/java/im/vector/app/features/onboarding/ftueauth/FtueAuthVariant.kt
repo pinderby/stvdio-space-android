@@ -483,12 +483,13 @@ class FtueAuthVariant(
     }
 
     private fun onAccountCreated() {
-        activity.supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-        activity.replaceFragment(
-                views.loginFragmentContainer,
-                FtueAuthAccountCreatedFragment::class.java,
-                useCustomAnimation = true
-        )
+//        activity.supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        navigateToHome()
+//        activity.replaceFragment(
+//                views.loginFragmentContainer,
+//                FtueAuthAccountCreatedFragment::class.java,
+//                useCustomAnimation = true
+//        )
     }
 
     private fun navigateToHome() {

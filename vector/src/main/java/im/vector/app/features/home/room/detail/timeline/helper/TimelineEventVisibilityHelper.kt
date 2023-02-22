@@ -18,6 +18,7 @@ package im.vector.app.features.home.room.detail.timeline.helper
 
 import im.vector.app.core.extensions.localDateTime
 import im.vector.app.core.resources.UserPreferencesProvider
+import im.vector.app.features.home.room.detail.TimelineFragment
 import org.matrix.android.sdk.api.session.events.model.Event
 import org.matrix.android.sdk.api.session.events.model.EventType
 import org.matrix.android.sdk.api.session.events.model.RelationType
@@ -191,7 +192,10 @@ class TimelineEventVisibilityHelper @Inject constructor(
     }
 
     private fun TimelineEvent.isDisplayable(): Boolean {
-        return TimelineDisplayableEvents.DISPLAYABLE_TYPES.contains(root.getClearType())
+        return if(TimelineFragment.canSend)
+            TimelineDisplayableEvents.DISPLAYABLE_TYPES.contains(root.getClearType())
+        else
+            TimelineDisplayableEvents.DISPLAYABLE_TYPES_WITHOUT_STATES.contains(root.getClearType())
     }
 
     private fun TimelineEvent.shouldBeHidden(rootThreadEventId: String?, isFromThreadTimeline: Boolean): Boolean {

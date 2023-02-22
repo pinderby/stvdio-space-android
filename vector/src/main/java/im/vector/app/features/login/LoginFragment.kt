@@ -189,7 +189,7 @@ class LoginFragment :
                 ServerType.MatrixOrg -> {
                     views.loginServerIcon.isVisible = true
                     views.loginServerIcon.setImageResource(R.drawable.ic_logo_matrix_org)
-                    views.loginTitle.text = getString(resId, "STVDIO Space")
+                    views.loginTitle.text = getString(resId, "STVDIO SPACE")
 //                    views.loginTitle.text = getString(resId, state.homeServerUrlFromUser.toReducedUrl())
                     views.loginNotice.text = getString(R.string.login_stvdio_server_matrix_org_text)
                 }

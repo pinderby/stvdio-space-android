@@ -42,7 +42,7 @@
         <item>staging.element.io</item>
         <!-- Previous Web instance, kept for compatibility reason -->
         <item>riot.im</item>
-        <!-- STVDIO Space web url -DTM- Changed -->
+        <!-- STVDIO SPACE web url -DTM- Changed -->
         <item>space.stvd.io</item>
     </string-array>
 

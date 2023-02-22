@@ -41,7 +41,8 @@ class AnalyticsOptInActivity : VectorBaseActivity<ActivitySimpleBinding>() {
     override fun initUiAndData() {
         orientationLocker.lockPhonesToPortrait(this)
         if (isFirstCreation()) {
-            addFragment(views.simpleFragmentContainer, AnalyticsOptInFragment::class.java)
+            viewModel.handle(AnalyticsConsentViewActions.SetUserConsent(userConsent = false))
+//            addFragment(views.simpleFragmentContainer, AnalyticsOptInFragment::class.java)
         }
 
         viewModel.observeViewEvents {
