@@ -207,20 +207,23 @@ class RoomMemberProfileFragment :
         when (val asyncUserMatrixItem = state.userMatrixItem) {
             Uninitialized,
             is Loading -> {
-                views.matrixProfileToolbarTitleView.text = state.userId
+                // --DTM-- remove "matrix" from user id display
+                views.matrixProfileToolbarTitleView.text = state.userId.replace(":matrix.org", "")
                 avatarRenderer.render(MatrixItem.UserItem(state.userId, null, null), views.matrixProfileToolbarAvatarImageView)
                 headerViews.memberProfileStateView.state = StateView.State.Loading
             }
             is Fail -> {
                 avatarRenderer.render(MatrixItem.UserItem(state.userId, null, null), views.matrixProfileToolbarAvatarImageView)
-                views.matrixProfileToolbarTitleView.text = state.userId
+                // --DTM-- remove "matrix" from user id display
+                views.matrixProfileToolbarTitleView.text = state.userId.replace(":matrix.org", "")
                 val failureMessage = errorFormatter.toHumanReadable(asyncUserMatrixItem.error)
                 headerViews.memberProfileStateView.state = StateView.State.Error(failureMessage)
             }
             is Success -> {
                 val userMatrixItem = asyncUserMatrixItem()
                 headerViews.memberProfileStateView.state = StateView.State.Content
-                headerViews.memberProfileIdView.text = userMatrixItem.id
+                // --DTM-- remove "matrix" from user id display
+                headerViews.memberProfileIdView.text = userMatrixItem.id.replace(":matrix.org", "")
                 val bestName = userMatrixItem.getBestName()
                 headerViews.memberProfileNameView.text = bestName
                 headerViews.memberProfileNameView.setTextColor(matrixItemColorProvider.getColor(userMatrixItem))

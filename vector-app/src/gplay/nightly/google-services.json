@@ -1,34 +1,33 @@
 {
   "project_info": {
-    "project_number": "912726360885",
-    "firebase_url": "https://vector-alpha.firebaseio.com",
-    "project_id": "vector-alpha",
-    "storage_bucket": "vector-alpha.appspot.com"
+    "project_number": "317780674306",
+    "project_id": "stvdio-space-dbg",
+    "storage_bucket": "stvdio-space-dbg.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:912726360885:android:4ef8f3a0021e774d",
+        "mobilesdk_app_id": "1:317780674306:android:76614416c164d75c31241b",
         "android_client_info": {
-          "package_name": "im.vector.app.nightly"
+          "package_name": "io.stvd.space.nightly"
         }
       },
       "oauth_client": [
         {
-          "client_id": "912726360885-e87n3jva9uoj4vbidvijq78ebg02asv2.apps.googleusercontent.com",
+          "client_id": "317780674306-76s25c2bfndnd66f34oio12mdrph1335.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAFZX8IhIfgzdOZvxDP_ISO5WYoU7jmQ5c"
+          "current_key": "AIzaSyD5Zt0VDhPeHAOjPU4kJvs6SqLNb13neh8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "912726360885-rsae0i66rgqt6ivnudu1pv4tksg9i8b2.apps.googleusercontent.com",
+              "client_id": "317780674306-76s25c2bfndnd66f34oio12mdrph1335.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
