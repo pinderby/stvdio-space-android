@@ -35,7 +35,7 @@ class PolicyController @Inject constructor() : TypedEpoxyController<List<Localiz
                 checked(entry.checked)
                 horizontalPadding(host.horizontalPadding)
                 title(entry.localizedFlowDataLoginTerms.localizedName)
-                subtitle(host.homeServer)
+                subtitle((host.homeServer?:"").replace("matrix.org", "STVDIO SPACE"))
                 clickListener { host.listener?.openPolicy(entry.localizedFlowDataLoginTerms) }
                 checkChangeListener { _, isChecked ->
                     host.listener?.setChecked(entry.localizedFlowDataLoginTerms, isChecked)

@@ -223,7 +223,7 @@ class RoomProfileFragment :
             } else {
                 headerViews.roomProfileNameView.text = it.displayName
                 views.matrixProfileToolbarTitleView.text = it.displayName
-                headerViews.roomProfileAliasView.setTextOrHide(it.canonicalAlias)
+                headerViews.roomProfileAliasView.setTextOrHide((it.canonicalAlias?:"").replace(":matrix.org", ""))
                 val matrixItem = it.toMatrixItem()
                 avatarRenderer.render(matrixItem, headerViews.roomProfileAvatarView)
                 avatarRenderer.render(matrixItem, views.matrixProfileToolbarAvatarImageView)

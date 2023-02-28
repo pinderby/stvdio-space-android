@@ -57,6 +57,39 @@ object TimelineDisplayableEvents {
             EventType.POLL_START +
             EventType.STATE_ROOM_BEACON_INFO +
             EventType.BEACON_LOCATION_DATA
+
+    val DISPLAYABLE_TYPES_WITHOUT_STATES: List<String> = listOf(
+            EventType.MESSAGE,
+//            EventType.STATE_ROOM_WIDGET_LEGACY,
+//            EventType.STATE_ROOM_WIDGET,
+//            EventType.STATE_ROOM_NAME,
+//            EventType.STATE_ROOM_TOPIC,
+//            EventType.STATE_ROOM_AVATAR,
+//            EventType.STATE_ROOM_MEMBER,
+//            EventType.STATE_ROOM_ALIASES,
+//            EventType.STATE_ROOM_CANONICAL_ALIAS,
+//            EventType.STATE_ROOM_HISTORY_VISIBILITY,
+//            EventType.STATE_ROOM_SERVER_ACL,
+//            EventType.STATE_ROOM_POWER_LEVELS,
+            EventType.CALL_INVITE,
+            EventType.CALL_HANGUP,
+            EventType.CALL_ANSWER,
+            EventType.CALL_REJECT,
+            EventType.ENCRYPTED,
+//            EventType.STATE_ROOM_ENCRYPTION,
+//            EventType.STATE_ROOM_GUEST_ACCESS,
+//            EventType.STATE_ROOM_THIRD_PARTY_INVITE,
+            EventType.STICKER,
+//            EventType.STATE_ROOM_CREATE,
+//            EventType.STATE_ROOM_TOMBSTONE,
+//            EventType.STATE_ROOM_JOIN_RULES,
+            EventType.KEY_VERIFICATION_DONE,
+            EventType.KEY_VERIFICATION_CANCEL,
+            VoiceBroadcastConstants.STATE_ROOM_VOICE_BROADCAST_INFO,
+    ) +
+            EventType.POLL_START +
+            EventType.STATE_ROOM_BEACON_INFO +
+            EventType.BEACON_LOCATION_DATA
 }
 
 fun TimelineEvent.isRoomConfiguration(roomCreatorUserId: String?): Boolean {

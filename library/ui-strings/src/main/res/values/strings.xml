@@ -10,8 +10,8 @@
     <!-- Notice -->
     <string name="notice_room_invite_no_invitee">%s\'s invitation</string>
     <string name="notice_room_invite_no_invitee_by_you">Your invitation</string>
-    <string name="text_privacy">By using STVDIO Space you agree to the <font color='#1167b1'><b><u>STVDIO Space Terms and Conditions</u></b></font></string>
-    <string name="login_stvdio_server_matrix_org_text">Join artists and fans on STVDIO Space!</string>
+    <string name="text_privacy">By using STVDIO SPACE you agree to the <font color='#1167b1'><b><u>STVDIO SPACE Terms and Conditions</u></b></font></string>
+    <string name="login_stvdio_server_matrix_org_text">Join artists and fans on STVDIO SPACE!</string>
     <string name="notice_room_created">%1$s created the room</string>
     <string name="notice_room_created_by_you">You created the room</string>
     <string name="notice_direct_room_created">%1$s created the discussion</string>
@@ -142,7 +142,7 @@
     <string name="unable_to_send_message">Unable to send message</string>
 
     <!-- general errors -->
-    <string name="matrix_error">STVDIO Space error</string>
+    <string name="matrix_error">STVDIO SPACE error</string>
     <string name="stvdio">STVDIO SPACE</string>
 
     <!-- Home Screen -->
@@ -479,7 +479,7 @@
 
     <!-- People fragment -->
     <string name="direct_chats_header">Conversations</string>
-    <string name="matrix_only_filter">STVDIO Space contacts only</string>
+    <string name="matrix_only_filter">STVDIO SPACE contacts only</string>
     <string name="no_result_placeholder">No results</string>
     <string name="no_more_results">No more results</string>
 
@@ -572,7 +572,7 @@
 
     <!-- Login Screen -->
     <string name="login_error_invalid_home_server">Please enter a valid URL</string>
-    <string name="login_error_no_homeserver_found">This is not a valid STVDIO Space server address</string>
+    <string name="login_error_no_homeserver_found">This is not a valid STVDIO SPACE server address</string>
     <string name="login_error_homeserver_not_found">Cannot reach a homeserver at this URL, please check it</string>
     <string name="login_error_homeserver_from_url_not_found">Cannot reach a homeserver at the URL %s. Please check your link or choose a homeserver manually.</string>
     <string name="login_error_homeserver_from_url_not_found_enter_manual">Choose homeserver</string>
@@ -797,7 +797,7 @@
     <string name="thread_list_empty_notice">Tip: Long tap a message and use “%s”.</string>
     <string name="search_thread_from_a_thread">From a Thread</string>
     <string name="threads_notice_migration_title">Threads Approaching Beta 🎉</string>
-    <string name="threads_notice_migration_message">We’re getting closer to releasing a public Beta for Threads.\n\nAs we prepare for it, we need to make some changes: threads created before this point will be displayed as regular replies.\n\nThis will be a one-off transition as Threads are now part of the STVDIO Space specification.</string>
+    <string name="threads_notice_migration_message">We’re getting closer to releasing a public Beta for Threads.\n\nAs we prepare for it, we need to make some changes: threads created before this point will be displayed as regular replies.\n\nThis will be a one-off transition as Threads are now part of the STVDIO SPACE specification.</string>
     <string name="threads_beta_enable_notice_title">Threads Beta</string>
     <!-- %s will be replaced with action_learn_more string resource that will be clickable(url redirection)  -->
     <string name="threads_beta_enable_notice_message">Threads help keep your conversations on-topic and easy to track. %sEnabling threads will refresh the app. This may take longer for some accounts.</string>
@@ -845,7 +845,7 @@
     <string name="settings_notification_by_event">Notification importance by event</string>
 
     <string name="settings_notification_emails_category">Email notification</string>
-    <string name="settings_notification_emails_no_emails">To receive email with notification, please associate an email address to your STVDIO Space account</string>
+    <string name="settings_notification_emails_no_emails">To receive email with notification, please associate an email address to your STVDIO SPACE account</string>
 
     <!-- The variable is a single email address, eg Enable email notifications for example@matrix.org -->
     <string name="settings_notification_emails_enable_for_email">Enable email notifications for %s</string>
@@ -1113,7 +1113,7 @@
     <string name="settings_unignore_user">Show all messages from %s?</string>
 
     <string name="settings_emails_and_phone_numbers_title">Emails and phone numbers</string>
-    <string name="settings_emails_and_phone_numbers_summary">Manage email addresses and phone numbers linked to your STVDIO Space account</string>
+    <string name="settings_emails_and_phone_numbers_summary">Manage email addresses and phone numbers linked to your STVDIO SPACE account</string>
 
     <string name="settings_select_country">Choose a country</string>
 
@@ -1380,7 +1380,7 @@
     <string name="widget_integration_missing_user_id">Missing user_id in request.</string>
     <string name="widget_integration_room_not_visible">Room %s is not visible.</string>
     <string name="widget_integration_missing_parameter">A required parameter is missing.</string>
-    <string name="room_add_matrix_apps">Add STVDIO Space apps</string>
+    <string name="room_add_matrix_apps">Add STVDIO SPACE apps</string>
     <string name="room_manage_integrations">Manage Integrations</string>
     <string name="room_no_active_widgets">No active widgets</string>
     <string name="settings_labs_native_camera">Use native camera</string>
@@ -1426,7 +1426,7 @@
     <string name="command_description_room_avatar">Changes the avatar of the current room</string>
     <string name="command_description_avatar_for_room">Changes your avatar in this current room only</string>
     <string name="command_description_markdown">On/Off markdown</string>
-    <string name="command_description_clear_scalar_token">To fix STVDIO Space Apps management</string>
+    <string name="command_description_clear_scalar_token">To fix STVDIO SPACE Apps management</string>
     <string name="command_description_devtools">Open the developer tools screen</string>
     <string name="command_description_whois">Displays information about a user</string>
 
@@ -1461,7 +1461,7 @@
 
     <!-- Deactivate account screen -->
     <string name="deactivate_account_title">Deactivate Account</string>
-    <string name="deactivate_account_content">This will make your account permanently unusable. You will not be able to log in, and no one will be able to re-register the same user ID. This will cause your account to leave all rooms it is participating in, and it will remove your account details from your identity server. <b>This action is irreversible</b>.\n\nDeactivating your account <b>does not by default cause us to forget messages you have sent</b>. If you would like us to forget your messages, please tick the box below.\n\nMessage visibility in STVDIO Space is similar to email. Our forgetting your messages means that messages you have sent will not be shared with any new or unregistered users, but registered users who already have access to these messages will still have access to their copy.</string>
+    <string name="deactivate_account_content">This will make your account permanently unusable. You will not be able to log in, and no one will be able to re-register the same user ID. This will cause your account to leave all rooms it is participating in, and it will remove your account details from your identity server. <b>This action is irreversible</b>.\n\nDeactivating your account <b>does not by default cause us to forget messages you have sent</b>. If you would like us to forget your messages, please tick the box below.\n\nMessage visibility in STVDIO SPACE is similar to email. Our forgetting your messages means that messages you have sent will not be shared with any new or unregistered users, but registered users who already have access to these messages will still have access to their copy.</string>
     <string name="deactivate_account_delete_checkbox">Please forget all messages I have sent when my account is deactivated (Warning: this will cause future users to see an incomplete view of conversations)</string>
     <string name="deactivate_account_submit">Deactivate Account</string>
 
@@ -1709,7 +1709,7 @@
 
     <string name="import_e2e_keys_from_file">"Import e2e keys from file \"%1$s\"."</string>
 
-    <string name="settings_sdk_version">STVDIO Space SDK Version</string>
+    <string name="settings_sdk_version">STVDIO SPACE SDK Version</string>
     <string name="settings_other_third_party_notices">Other third party notices</string>
     <string name="navigate_to_room_when_already_in_the_room">You are already viewing this room!</string>
     <string name="navigate_to_thread_when_already_in_the_thread">You are already viewing this thread!</string>
@@ -1965,11 +1965,11 @@
     <string name="ftue_auth_carousel_workplace_title">Messaging for your team.</string>
 
     <string name="ftue_auth_carousel_secure_body">Secure and independent communication that gives you the same level of privacy as a face-to-face conversation in your own home.</string>
-    <string name="ftue_auth_carousel_control_body">Choose where your conversations are kept, giving you control and independence. Connected via STVDIO Space.</string>
+    <string name="ftue_auth_carousel_control_body">Choose where your conversations are kept, giving you control and independence. Connected via STVDIO SPACE.</string>
     <string name="ftue_auth_carousel_encrypted_body">End-to-end encrypted and no phone number required. No ads or datamining.</string>
     <!-- Note to translators: the translation MUST contain the string "${app_name}", which will be replaced by the application name -->
     <string name="ftue_auth_carousel_workplace_body">${app_name} is also great for the workplace. It’s trusted by the world’s most secure organisations.</string>
-    <string name="ftue_auth_carousel_welcome_to_stvdio_space">Welcome to STVDIO Space!</string>
+    <string name="ftue_auth_carousel_welcome_to_stvdio_space">Welcome to STVDIO SPACE!</string>
 
     <string name="ftue_auth_use_case_title">Who will you chat to the most?</string>
     <string name="ftue_auth_use_case_subtitle">We\'ll help you get connected</string>
@@ -2004,7 +2004,7 @@
     <string name="ftue_auth_choose_server_entry_hint">Server URL</string>
     <string name="ftue_auth_choose_server_ems_title">Want to host your own server?</string>
 
-    <string name="ftue_auth_choose_server_ems_subtitle">STVDIO Space Services (EMS) is a robust and reliable hosting service for fast, secure and real time communication. Find out how on <a href="${ftue_ems_url}">element.io/ems</a></string>
+    <string name="ftue_auth_choose_server_ems_subtitle">STVDIO SPACE Services (EMS) is a robust and reliable hosting service for fast, secure and real time communication. Find out how on <a href="${ftue_ems_url}">element.io/ems</a></string>
     <string name="ftue_auth_choose_server_ems_cta">Get in touch</string>
 
     <string name="ftue_auth_terms_title">Server policies</string>
@@ -2088,7 +2088,7 @@
     <string name="login_continue">Continue</string>
     <!-- Replaced string is the homeserver url -->
     <string name="login_connect_to">Connect to %1$s</string>
-    <string name="login_connect_to_modular">Connect to STVDIO Space Services</string>
+    <string name="login_connect_to_modular">Connect to STVDIO SPACE Services</string>
     <string name="login_connect_to_a_custom_server">Connect to a custom server</string>
     <!-- Replaced string is the homeserver url -->
     <string name="login_signin_to">Sign in to %1$s</string>
@@ -2097,7 +2097,7 @@
     <string name="login_signin_sso">Continue with SSO</string>
     <string name="login_clear_homeserver_history">Clear history</string>
 
-    <string name="login_server_url_form_modular_hint">STVDIO Space Services Address</string>
+    <string name="login_server_url_form_modular_hint">STVDIO SPACE Services Address</string>
     <string name="login_server_url_form_other_hint">Address</string>
     <string name="login_server_url_form_modular_text">Premium hosting for organisations</string>
     <string name="login_server_url_form_modular_notice">Enter the address of the Modular Element or Server you want to use</string>
@@ -2173,7 +2173,7 @@
     <string name="login_signup_cancel_confirmation_content">Your account is not created yet. Stop the registration process?</string>
 
     <string name="login_a11y_choose_matrix_org">Select space.stvd.io</string>
-    <string name="login_a11y_choose_modular">Select STVDIO Space Services</string>
+    <string name="login_a11y_choose_modular">Select STVDIO SPACE Services</string>
     <string name="login_a11y_choose_other">Select a custom homeserver</string>
     <string name="login_a11y_captcha_container">Please perform the captcha challenge</string>
     <string name="login_terms_title">Accept terms to continue</string>
@@ -2189,10 +2189,10 @@
         <item quantity="other">Too many requests have been sent. You can retry in %1$d seconds…</item>
     </plurals>
 
-    <string name="login_connect_using_matrix_id_submit">Sign in with STVDIO Space ID</string>
-    <string name="login_signin_matrix_id_title">Sign in with STVDIO Space ID</string>
-    <string name="login_signin_matrix_id_notice">If you set up an account on a homeserver, use your STVDIO Space ID (e.g. @user:domain.com) and password below.</string>
-    <string name="login_signin_matrix_id_hint">STVDIO Space ID</string>
+    <string name="login_connect_using_matrix_id_submit">Sign in with STVDIO SPACE ID</string>
+    <string name="login_signin_matrix_id_title">Sign in with STVDIO SPACE ID</string>
+    <string name="login_signin_matrix_id_notice">If you set up an account on a homeserver, use your STVDIO SPACE ID (e.g. @user:domain.com) and password below.</string>
+    <string name="login_signin_matrix_id_hint">STVDIO SPACE ID</string>
     <string name="login_signin_matrix_id_password_notice">If you don’t know your password, go back to reset it.</string>
     <string name="login_signin_matrix_id_error_invalid_matrix_id">This is not a valid user identifier. Expected format: \'@user:homeserver.org\'</string>
     <string name="autodiscover_well_known_error">Unable to find a valid homeserver. Please check your identifier</string>
@@ -2612,12 +2612,12 @@
     <string name="change_password_summary">Set a new account password…</string>
 
     <!-- Note to translators: the translation MUST contain the string "${app_name}", which will be replaced by the application name -->
-    <string name="use_other_session_content_description">Use the latest ${app_name} on your other devices, ${app_name} Web, ${app_name} Desktop, ${app_name} iOS, ${app_name} for Android, or another cross-signing capable STVDIO Space client</string>
+    <string name="use_other_session_content_description">Use the latest ${app_name} on your other devices, ${app_name} Web, ${app_name} Desktop, ${app_name} iOS, ${app_name} for Android, or another cross-signing capable STVDIO SPACE client</string>
     <!-- Note to translators: the translation MUST contain the string "${app_name}", which will be replaced by the application name -->
     <string name="app_desktop_web">${app_name} Web\n${app_name} Desktop</string>
     <!-- Note to translators: the translation MUST contain the string "${app_name}", which will be replaced by the application name -->
     <string name="app_ios_android">${app_name} iOS\n${app_name} Android</string>
-    <string name="or_other_mx_capable_client">or another cross-signing capable STVDIO Space client</string>
+    <string name="or_other_mx_capable_client">or another cross-signing capable STVDIO SPACE client</string>
     <!-- Note to translators: the translation MUST contain the string "${app_name}", which will be replaced by the application name -->
     <string name="use_latest_app">Use the latest ${app_name} on your other devices:</string>
     <string name="command_description_discard_session">Forces the current outbound group session in an encrypted room to be discarded</string>
@@ -2762,7 +2762,7 @@
     <string name="loading_contact_book">Retrieving your contacts…</string>
     <string name="empty_contact_book">Your contact book is empty</string>
     <string name="contacts_book_title">Contacts book</string>
-    <string name="phone_book_perform_lookup">Search for contacts on STVDIO Space</string>
+    <string name="phone_book_perform_lookup">Search for contacts on STVDIO SPACE</string>
 
     <string name="three_pid_revoke_invite_dialog_title">Revoke invite</string>
     <string name="three_pid_revoke_invite_dialog_content">Revoke invite to %1$s?</string>

@@ -168,6 +168,9 @@ class TimelineViewModel @AssistedInject constructor(
     // Slot to keep a pending action during permission request
     var pendingAction: RoomDetailAction? = null
 
+    // Slot to keep a pending event during permission request
+    var pendingEvent: RoomDetailViewEvents? = null
+
     private var trackUnreadMessages = AtomicBoolean(false)
     private var mostRecentDisplayedEvent: TimelineEvent? = null
 

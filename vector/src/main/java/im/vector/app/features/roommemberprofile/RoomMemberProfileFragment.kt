@@ -222,6 +222,7 @@ class RoomMemberProfileFragment :
             is Success -> {
                 val userMatrixItem = asyncUserMatrixItem()
                 headerViews.memberProfileStateView.state = StateView.State.Content
+
                 // --DTM-- remove "matrix" from user id display
                 headerViews.memberProfileIdView.text = userMatrixItem.id.replace(":matrix.org", "")
                 val bestName = userMatrixItem.getBestName()

@@ -337,7 +337,7 @@ class HomeRoomListViewModel @AssistedInject constructor(
                 } else {
                     val userName = session.getUserOrDefault(session.myUserId).toMatrixItem().getBestName()
                     StateView.State.Empty(
-                            title = stringProvider.getString(R.string.home_empty_no_rooms_title, userName),
+                            title = stringProvider.getString(R.string.home_empty_no_rooms_title, userName.replace(":matrix.org", "")),
                             message = stringProvider.getString(R.string.home_empty_no_rooms_message),
                             image = drawableProvider.getDrawable(R.drawable.ill_empty_all_chats),
                             isBigImage = true
