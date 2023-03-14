@@ -10,7 +10,7 @@
     <color name="hard_resource_limit_exceeded">?colorError</color>
 
     <!-- Notification (do not depends on theme) -->
-    <color name="notification_accent_color">@color/palette_azure</color>
+    <color name="notification_accent_color">@color/palette_black</color>
     <color name="key_share_req_accent_color">@color/palette_melon</color>
 
     <!-- Source: https://zpl.io/aBKw9Mk -->
